@@ -1,0 +1,362 @@
+package com.tapit.adview.ormma;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Surface;
+import android.view.View;
+import android.view.WindowManager;
+import android.webkit.URLUtil;
+
+import com.tapit.adview.AdViewCore;
+import com.tapit.adview.ormma.util.OrmmaConfigurationBroadcastReceiver;
+
+/**
+ * The Class OrmmaDisplayController.  A ormma controller for handling display related operations
+ */
+public class OrmmaDisplayController extends OrmmaController {
+
+	//tag for logging
+	private static final String LOG_TAG = "OrmmaDisplayController";
+	
+	private WindowManager mWindowManager;
+	private boolean bMaxSizeSet = false;
+	private int mMaxWidth = -1;
+	private int mMaxHeight = -1;
+	private OrmmaConfigurationBroadcastReceiver mBroadCastReceiver;
+	private float mDensity;
+	
+	/**
+	 * Instantiates a new ormma display controller.
+	 *
+	 * @param adView the ad view
+	 * @param c the context
+	 */
+	public OrmmaDisplayController(AdViewCore adView, Context c) {
+		super(adView, c);
+		DisplayMetrics metrics = new DisplayMetrics();
+		mWindowManager = (WindowManager) c.getSystemService(Context.WINDOW_SERVICE);
+		mWindowManager.getDefaultDisplay().getMetrics(metrics);
+		mDensity = metrics.density;
+
+	}
+
+	/**
+	 * Resize the view.
+	 *
+	 * @param width the width
+	 * @param height the height
+	 */
+	public void resize(int width, int height) {
+		Log.d(LOG_TAG, "resize: width: " + width + " height: " + height);
+		if (((mMaxHeight > 0) && (height > mMaxHeight)) || ((mMaxWidth > 0) && (width > mMaxWidth))) {
+			mAdViewCore.raiseError("Maximum size exceeded", "resize");
+		} else
+			mAdViewCore.resize((int) (mDensity * width), (int) (mDensity * height));
+
+	}
+
+	/**
+	 * Open a browser
+	 *
+	 * @param url the url
+	 * @param back show the back button
+	 * @param forward show the forward button
+	 * @param refresh show the refresh button
+	 */
+	public void open(String url, boolean back, boolean forward, boolean refresh) {
+		Log.d(LOG_TAG, "open: url: " + url + " back: " + back + " forward: " + forward + " refresh: " + refresh);
+		if(!URLUtil.isValidUrl(url)){
+			mAdViewCore.raiseError("Invalid url", "open");
+		}else{
+			mAdViewCore.open(url, back, forward, refresh);
+		}
+	}
+//	
+//	/**Open map
+//	 * @param url - map url
+//	 * @param fullscreen - boolean indicating whether map to be launched in full screen
+//	 */
+//	public void openMap(String url, boolean fullscreen) {
+//		Log.d(LOG_TAG, "openMap: url: " + url);
+//		mAdViewCore.openMap(url, fullscreen);
+//	}
+	
+
+//	/**
+//	 * Play audio
+//	 * @param url - audio url to be played
+//	 * @param autoPlay - if audio should play immediately
+//	 * @param controls - should native player controls be visible
+//	 * @param loop - should video start over again after finishing
+//	 * @param position - should audio be included with ad content
+//	 * @param startStyle - normal/full screen (if audio should play in native full screen mode)
+//	 * @param stopStyle - normal/exit (exit if player should exit after audio stops)
+//	 */
+//	public void playAudio(String url, boolean autoPlay, boolean controls, boolean loop, boolean position, String startStyle, String stopStyle) {
+//		Log.d(LOG_TAG, "playAudio: url: " + url + " autoPlay: " + autoPlay + " controls: " + controls + " loop: " + loop + " position: " + position + " startStyle: " + startStyle + " stopStyle: "+stopStyle);
+//		if(!URLUtil.isValidUrl(url)){
+//			mAdViewCore.raiseError("Invalid url", "playAudio");
+//		}else{
+//			mAdViewCore.playAudio(url, autoPlay, controls, loop, position, startStyle, stopStyle);
+//		}
+//		
+//	}
+	
+	
+	/**
+	 * Play video
+	 * @param url - video url to be played
+	 * @param audioMuted - should audio be muted
+	 * @param autoPlay - should video play immediately
+	 * @param controls  - should native player controls be visible
+	 * @param loop - should video start over again after finishing
+	 * @param position - top and left coordinates of video in pixels if video should play inline
+	 * @param startStyle - normal/fullscreen (if video should play in native full screen mode)
+	 * @param stopStyle - normal/exit (exit if player should exit after video stops)
+	 */
+	public void playVideo(String url, boolean audioMuted, boolean autoPlay, boolean controls, boolean loop, int[] position, String startStyle, String stopStyle) {
+		Log.d(LOG_TAG, "playVideo: url: " + url + " audioMuted: " + audioMuted + " autoPlay: " + autoPlay + " controls: " + controls + " loop: " + loop + " x: " + position[0] + 
+				" y: " + position[1] + " width: " + position[2] + " height: " + position[3] + " startStyle: " + startStyle + " stopStyle: " + stopStyle);
+		Dimensions d = null;
+		if(position[0] != -1) {
+			d = new Dimensions();
+			d.x = position[0];
+			d.y = position[1];
+			d.width = position[2];
+			d.height = position[3];
+			d = getDeviceDimensions(d);
+		}		
+		if(!URLUtil.isValidUrl(url)){
+			mAdViewCore.raiseError("Invalid url", "playVideo");
+		}else{
+			mAdViewCore.playVideo(url, null, audioMuted, autoPlay, controls, loop, d, startStyle, stopStyle);
+		}
+	}
+
+	/**
+	 * Get Device dimensions
+	 * @param d - dimensions received from java script
+	 * @return
+	 */
+	private Dimensions getDeviceDimensions(Dimensions d){
+		d.width *= mDensity;
+		d.height *= mDensity;
+		d.x *= mDensity;
+		d.y *= mDensity;
+		if (d.height < 0)
+			d.height = mAdViewCore.getHeight();
+		if (d.width < 0)
+			d.width = mAdViewCore.getWidth();
+		int loc[] = new int[2];
+		mAdViewCore.getLocationInWindow(loc);
+		if (d.x < 0)
+			d.x = loc[0];
+		if (d.y < 0) {
+			int topStuff = 0;// ((Activity)mContext).findViewById(Window.ID_ANDROID_CONTENT).getTop();
+			d.y = loc[1] - topStuff;
+		}
+		return d;
+	}
+	
+	/**
+	 * Expand the view
+	 *
+	 * @param dimensions the dimensions to expand to
+	 * @param URL the uRL
+	 * @param properties the properties for the expansion
+	 */
+	public void expand(String dimensions, String URL, String properties) {
+        Log.d(LOG_TAG, "expand: dimensions: " + dimensions + " url: " + URL + " properties: " + properties);
+		try {
+			Dimensions d = (Dimensions) getFromJSON(new JSONObject(dimensions), Dimensions.class);
+			mAdViewCore.expand(getDeviceDimensions(d), URL, (Properties) getFromJSON(new JSONObject(properties), Properties.class));
+//			mAdViewCore.resize(getDeviceDimensions(d).width, getDeviceDimensions(d).height);
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Close the view
+	 */
+	public void close() {
+		Log.d(LOG_TAG, "close");
+		mAdViewCore.close();
+	}
+
+	/**
+	 * Hide the view
+	 */
+	public void hide() {
+		Log.d(LOG_TAG, "hide");
+		mAdViewCore.hide();
+	}
+
+	/**
+	 * Show the view
+	 */
+	public void show() {
+		Log.d(LOG_TAG, "show");
+		mAdViewCore.show();
+	}
+
+	/**
+	 * Checks if is visible.
+	 *
+	 * @return true, if is visible
+	 */
+	public boolean isVisible() {
+		return (mAdViewCore.getVisibility() == View.VISIBLE);
+	}
+
+	/**
+	 * Dimensions.
+	 *
+	 * @return the string
+	 */
+	public String dimensions() {
+		return "{ \"top\" :" + (int) (mAdViewCore.getTop() / mDensity) + "," + "\"left\" :"
+				+ (int) (mAdViewCore.getLeft() / mDensity) + "," + "\"bottom\" :"
+				+ (int) (mAdViewCore.getBottom() / mDensity) + "," + "\"right\" :"
+				+ (int) (mAdViewCore.getRight() / mDensity) + "}";
+	}
+
+	/**
+	 * Gets the orientation.
+	 *
+	 * @return the orientation
+	 */
+	public int getOrientation() {
+		int orientation = mWindowManager.getDefaultDisplay().getOrientation();
+		int ret = -1;
+		switch (orientation) {
+		case Surface.ROTATION_0:
+			ret = 0;
+			break;
+
+		case Surface.ROTATION_90:
+			ret = 90;
+			break;
+
+		case Surface.ROTATION_180:
+			ret = 180;
+			break;
+
+		case Surface.ROTATION_270:
+			ret = 270;
+			break;
+		}
+		Log.d(LOG_TAG, "getOrientation: " +  ret);
+		return ret;
+	}
+
+	/**
+	 * Gets the screen size.
+	 *
+	 * @return the screen size
+	 */
+	public String getScreenSize() {
+		DisplayMetrics metrics = new DisplayMetrics();
+		mWindowManager.getDefaultDisplay().getMetrics(metrics);
+
+		return "{ width: " + (int) (metrics.widthPixels / metrics.density) + ", " + "height: "
+				+ (int) (metrics.heightPixels / metrics.density) + "}";
+	}
+
+	/**
+	 * Gets the size.
+	 *
+	 * @return the size
+	 */
+	public String getSize() {
+		return mAdViewCore.getSize();
+	}
+
+	/**
+	 * Gets the max size.
+	 *
+	 * @return the max size
+	 */
+	public String getMaxSize() {
+		if (bMaxSizeSet)
+			return "{ width: " + mMaxWidth + ", " + "height: " + mMaxHeight + "}";
+		else
+			return getScreenSize();
+	}
+
+	/**
+	 * Sets the max size.
+	 *
+	 * @param w the w
+	 * @param h the h
+	 */
+	public void setMaxSize(int w, int h) {
+		bMaxSizeSet = true;
+		mMaxWidth = w;
+		mMaxHeight = h;
+	}
+
+	/**
+	 * On orientation changed.
+	 *
+	 * @param orientation the orientation
+	 */
+	public void onOrientationChanged(int orientation) {
+		String script = "window.ormmaview.fireChangeEvent({ orientation: " + orientation + "});";
+		Log.d(LOG_TAG, script );
+		mAdViewCore.injectJavaScript(script);
+	}
+
+	/**
+	 * Log html.
+	 *
+	 * @param html the html
+	 */
+	public void logHTML(String html) {
+		Log.d(LOG_TAG, html);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.ormma.controller.OrmmaController#stopAllListeners()
+	 */
+	@Override
+	public void stopAllListeners() {
+		stopConfigurationListener();
+		mBroadCastReceiver = null;
+	}
+
+	public void stopConfigurationListener() {
+		try {
+			mContext.unregisterReceiver(mBroadCastReceiver);
+		} catch (Exception e) {
+		}
+	}
+	
+	public void startConfigurationListener() {
+		try {
+			if(mBroadCastReceiver == null) 
+				mBroadCastReceiver = new OrmmaConfigurationBroadcastReceiver(this);
+			mContext.registerReceiver(mBroadCastReceiver, new IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED));
+		}catch(Exception e) {
+		}
+	}
+}

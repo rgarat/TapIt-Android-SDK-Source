@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="TapItSDK" default="release.build.TapIt">
+
+	<!-- The local.properties file is created and updated by the 'android'
+	     tool.
+	     It contains the path to the SDK. It should *NOT* be checked into
+	     Version Control Systems. -->
+	<property file="local.properties" />
+	
+    <property name="release.dir" value="release"/>
+    <property name="sample.tapit.dir" value="${release.dir}\Sample"/>
+    <property name="doc.tapit.dir" value="${release.dir}\Documentation"/>
+	<property name="source.tapit.dir" value="${release.dir}\Source"/>	
+    <property name="temp.dir" value="${release.dir}\temp"/>
+    <property name="temp.classes.dir" value="${temp.dir}\classes"/>
+	<property name="jar.name" value="TapItAdView.jar"/>
+
+	<target name="release.build.TapIt"  depends="clean, make.dirs">
+			<antcall target="release.build.tapit"/>
+		<!--<antcall target="source.tapit"/>-->
+			<antcall target="javadoc.tapit"/>
+		<!--<antcall target="sample"/>-->
+		<!--<antcall target="zip.TapIt"/>-->
+	        <delete dir="${temp.dir}"/>
+		</target>
+	
+	<target name="release.build.tapit"  depends="compile.sources">
+				<jar destfile="${release.dir}/${jar.name}"
+			    	basedir="${temp.classes.dir}"
+					manifest="MANIFEST.MF">
+					<fileset dir="js"/>
+				</jar>
+		</target>
+	<target name="compile.sources">
+		<javac destdir="${temp.classes.dir}" debug="on" debuglevel="lines,source"
+		    excludes="src/com/tapit/test/**">
+			<src path="src\com\tapit\adview" />
+			<classpath>
+				<pathelement path="${android.jar}"/>
+		    </classpath>
+        </javac>
+	</target>
+	
+	<target name="make.dirs">
+	    <mkdir dir="${temp.dir}"/>
+	    <mkdir dir="${temp.classes.dir}"/>
+    	<!--mkdir dir="${demo.tapit.dir}"/-->
+	    <!--mkdir dir="${lib.tapit.dir}"/-->
+	    <!--mkdir dir="${sample.tapit.dir}"/-->
+	    <mkdir dir="${doc.tapit.dir}"/>
+	</target>
+	
+    <target name="clean" description="clean up">
+        <delete dir="${release.dir}"/>
+    </target>
+	
+	<target name="zip.TapIt">
+		<zip destfile="${sample.tapit.dir}/TapIt_Android_SDK_2_x_x.zip"
+			 basedir="${sample.tapit.dir}"/>
+    	<delete includeemptydirs="true">
+			<fileset 
+				dir="${sample.tapit.dir}" 
+				includes="**/*" 
+				excludes="**/TapIt_Android_SDK_2_x_x.zip"
+			/>
+		</delete>
+	</target>
+	
+	<target name="sample">
+			<!--<copy todir="${sample.tapit.dir}/Samples">
+	    	    <fileset 
+	    	    	dir="test/" 
+	    	    	includes=",res/,src/,AndroidManifest.xml,.classpath,default.properties" 
+	    	    	casesensitive="false"
+	    	    />				
+			</copy>-->
+		    <copy todir="${sample.tapit.dir}/Samples/lib">
+	    	    <fileset 
+	    	    	dir="${lib.tapit.dir}" 
+	    	    	includes="${jar.name}" 
+	    	    	casesensitive="false"
+	    	    />				
+			</copy>
+		 	<copy todir="${sample.tapit.dir}">
+	    	    <fileset 
+	    	    	dir="${lib.tapit.dir}" 
+	    	    	includes="${jar.name}" 
+	    	    	casesensitive="false"
+	    	    />				
+			</copy>
+	</target>
+	<target name="source.tapit">
+		<copy todir="${source.tapit.dir}">
+    	    <fileset 
+    	    	dir="" 
+    	    	includes="js/,lib/,res/,src/,AndroidManifest.xml,build.xml,MANIFEST.MF,
+    	    	test/lib/,test/res/,test/src/,test/AndroidManifest.xml" 
+    	    	casesensitive="false"
+    	    />
+		</copy>
+    	<zip destfile="${release.dir}/source.zip"
+ 	    	basedir="${source.tapit.dir}"
+		/>
+		<!--<delete includeemptydirs="true">
+			<fileset 
+				dir="${source.tapit.dir}" 
+				includes="**/*" 
+				excludes="**/source.zip"
+			/>
+		</delete>-->
+		<delete dir="${source.tapit.dir}"/>
+    </target>
+	
+	<target name="javadoc.tapit">
+		<javadoc destdir="${doc.tapit.dir}">
+			<classpath>
+			  <pathelement path="${android.jar}"/>
+			</classpath>
+		    <fileset dir="src" defaultexcludes="yes">
+		      <include name="com/tapit/adview/AdLog.java"/>
+		      <include name="com/tapit/adview/AdView.java"/>
+		      <include name="com/tapit/adview/AdViewCore.java"/>
+		      <include name="com/tapit/adview/AdInterstitialView.java"/>
+		      <include name="com/tapit/adview/AdFullscreenView.java"/>
+		      <include name="com/tapit/adview/AdOfferWallView.java"/>
+		      <include name="com/tapit/adview/AdVideoUnitView.java"/>
+		      <include name="com/tapit/adview/notif/TapIt.java"/>
+		      <include name="com/tapit/adview/track/EventTracker.java"/>
+		      <include name="com/tapit/adview/track/InstallTracker.java"/>
+		    </fileset>
+		</javadoc>	
+    	<zip destfile="${release.dir}/javadoc.zip"
+ 	    	basedir="${doc.tapit.dir}"
+		/>
+		<delete dir="${doc.tapit.dir}"/>
+    </target>
+
+</project>
+	
