@@ -1,6 +1,7 @@
 package com.tapit.adview;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -12,13 +13,36 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.telephony.TelephonyManager;
 import android.util.AttributeSet;
+import android.view.Display;
 
 /**
- * Viewer of advertising. Following parametres are defined automatically, if
+ * Viewer of advertising. Following parameters are defined automatically, if
  * they are equal NULL: latitude - Latitude. longitude - Longitude. ua - The
  * browser user agent of the device making the request.
  */
 public class AdView extends AdViewCore {
+	/**
+	 * Available ad dimensions for display
+	 * AUTOSIZE_BANNER will attempt to fill the size allocated to the AdView
+	 * 
+	 * See http://tapit.com/technology/ad-specs for a description of the other ad sizes
+	 */
+	public enum BannerAdSize {
+		AUTOSIZE_AD		( -1,  -1),
+		SMALL_BANNER	(120,  20), 
+		MEDIUM_BANNER	(168,  28), 
+		LARGE_BANNER	(216,  36), 
+		XL_BANNER		(300,  50), 
+		IPHONE_BANNER	(320,  50);
+		
+		public final int width;
+		public final int height;
+		BannerAdSize(int width, int height) {
+			this.width = width;
+			this.height = height;
+		}
+	}
+	
 	private AutoDetectParametersThread autoDetectParametersThread;
 	private LocationManager locationManager;
 	private WhereamiLocationListener listener;
@@ -73,6 +97,7 @@ public class AdView extends AdViewCore {
 	}
 
 	private void initialize(Context context) {
+		setAdSize(BannerAdSize.AUTOSIZE_AD); // default to auto-sizing banner
 		if (adRequest != null) {
 			AutoDetectedParametersSet autoDetectedParametersSet = AutoDetectedParametersSet
 					.getInstance();
@@ -95,6 +120,38 @@ public class AdView extends AdViewCore {
 		
 	}
 
+	public void setAdSize(BannerAdSize adSize) {
+		int width = adSize.width;
+		int height = adSize.height;
+		
+		if(width <= 0) {
+			Display display = ((Activity) context).getWindowManager().getDefaultDisplay();
+			int screenHeight = display.getHeight();
+			int screenWidth = display.getWidth();
+
+			int adWidth = getWidth();
+			if(adWidth <= 0) {
+				adWidth = screenWidth;
+			}
+			int adHeight = getHeight();
+			if(adHeight <= 0) {
+				adHeight = screenHeight;
+			}
+			for(BannerAdSize as : BannerAdSize.values()) {
+				if(as.width <= adWidth && as.height <= adHeight 
+						&& (as.width > width || as.height > height)) {
+					width = as.width;
+					height = as.height;
+				}
+			}
+		}
+
+		if ((adRequest != null)) {
+			adRequest.setHeight(height);
+			adRequest.setWidth(width);
+		}
+	}
+	
 	@Override
 	protected void onAttachedToWindow() {
 		adLog.log(AdLog.LOG_LEVEL_2, AdLog.LOG_TYPE_INFO, "AttachedToWindow", "");
@@ -111,6 +168,16 @@ public class AdView extends AdViewCore {
 		super.onDetachedFromWindow();
 	}
 
+	/**
+	 * kicks off ad loading and display
+	 */
+	public void startUpdating() {
+		
+	}
+	
+	/**
+	 * stop ad from automatically reloading
+	 */
 	@Override
 	protected void cancelUpdating() {
 		if ((locationManager != null) && (listener != null)) {

@@ -36,7 +36,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="onClick"
             android:text="Send Request" >
         </Button>
     </LinearLayout>
@@ -51,7 +50,6 @@
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="onClick"
         android:text="Show Interstitial View" >
     </Button>
 
@@ -59,7 +57,6 @@
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="onClick"
         android:text="Show Fullscreen View" >
     </Button>
 
@@ -67,7 +64,6 @@
         android:id="@+id/button3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="onClick"
         android:text="Show Offer Wall" >
     </Button>
 
@@ -75,7 +71,6 @@
         android:id="@+id/button4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="onClick"
         android:text="Show VideoAd" >
     </Button>
 

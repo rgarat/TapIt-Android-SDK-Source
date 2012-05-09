@@ -46,22 +46,20 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-//import com.tapit.adview.ormma.OrmmaController.Dimensions;
-//import com.tapit.adview.ormma.OrmmaController.PlayerProperties;
-//import com.tapit.adview.ormma.OrmmaController.Properties;
-//import com.tapit.adview.ormma.OrmmaUtilityController;
-//import com.tapit.adview.ormma.util.OrmmaActionHandler;
+import com.tapit.adview.AdLog;
+
 
 /**
  * Viewer of advertising.
  */
 public abstract class AdViewCore extends WebView {
-	
+	public static final String VERSION = "1.6.0";
 	public static final String TAG = "AdViewCore";
 
 	private static final long AD_DEFAULT_RELOAD_PERIOD = 120000; // milliseconds
 //	private static final long AD_STOP_CHECK_PERIOD = 10000; // milliseconds
 	Handler handler = new Handler(Looper.getMainLooper());
+	protected Context context;
 	private Integer defaultImageResource;
 	private Timer reloadTimer;
 	protected AdRequest adRequest;
@@ -70,13 +68,15 @@ public abstract class AdViewCore extends WebView {
 	private OnAdDownload adDownload;
 
 	private float mDensity; // screen pixel density
-	private int mDefaultHeight; // default height of the view
-	private int mDefaultWidth; // default width of the view
+//	private int mDefaultHeight; // default height of the view
+//	private int mDefaultWidth; // default width of the view
 	private int mInitLayoutHeight; // initial height of the view
 	private int mInitLayoutWidth; // initial height of the view
 	private int adHeight; // ad height, as reported by server
 	private int adWidth; // ad width, as reported by server
 	private int mIndex; // index of the view within its viewgroup
+	
+	private String mClickURL;
 	
 	/**
 	 * The b got layout params.
@@ -89,27 +89,27 @@ public abstract class AdViewCore extends WebView {
 	
 	private boolean openInInternalBrowser = true;
 	
-	private static final int MESSAGE_RESIZE = 1000;
-	private static final int MESSAGE_CLOSE = 1001;
-	private static final int MESSAGE_HIDE = 1002;
-	private static final int MESSAGE_SHOW = 1003;
-	private static final int MESSAGE_EXPAND = 1004;
-	private static final int MESSAGE_SEND_EXPAND_CLOSE = 1005;
+//	private static final int MESSAGE_RESIZE = 1000;
+//	private static final int MESSAGE_CLOSE = 1001;
+//	private static final int MESSAGE_HIDE = 1002;
+//	private static final int MESSAGE_SHOW = 1003;
+//	private static final int MESSAGE_EXPAND = 1004;
+//	private static final int MESSAGE_SEND_EXPAND_CLOSE = 1005;
 //	private static final int MESSAGE_OPEN = 1006;
-	private static final int MESSAGE_PLAY_VIDEO = 1007;
+//	private static final int MESSAGE_PLAY_VIDEO = 1007;
 //	private static final int MESSAGE_PLAY_AUDIO = 1008;
-	private static final int MESSAGE_RAISE_ERROR = 1009;
+//	private static final int MESSAGE_RAISE_ERROR = 1009;
 
 	public static final String DIMENSIONS = "expand_dimensions";
 	public static final String PLAYER_PROPERTIES = "player_properties";
 	public static final String EXPAND_URL = "expand_url";
 	public static final String ACTION_KEY = "action";
-	private static final String EXPAND_PROPERTIES = "expand_properties";
-	private static final String RESIZE_WIDTH = "resize_width";
-	private static final String RESIZE_HEIGHT = "resize_height";
+//	private static final String EXPAND_PROPERTIES = "expand_properties";
+//	private static final String RESIZE_WIDTH = "resize_width";
+//	private static final String RESIZE_HEIGHT = "resize_height";
 
-	private static final String ERROR_MESSAGE = "message";
-	private static final String ERROR_ACTION = "action";
+//	private static final String ERROR_MESSAGE = "message";
+//	private static final String ERROR_ACTION = "action";
 
 	protected static final int BACKGROUND_ID = 101;
 	protected static final int PLACEHOLDER_ID = 100;
@@ -231,17 +231,47 @@ public abstract class AdViewCore extends WebView {
 		/**
 		 * This event is fired before banner download begins.
 		 */
-		public void begin();
+		public void begin(AdViewCore adView);
 
 		/**
 		 * This event is fired after banner content fully downloaded.
 		 */
-		public void end();
+		public void end(AdViewCore adView);
 
 		/**
 		 * This event is fired after fail to download content.
 		 */
-		public void error(String error);
+		public void error(AdViewCore adView, String error);
+	}
+
+	/**
+	 * The interface for advertising downloading.
+	 */
+	public interface OnInterstitialAdDownload {
+		/**
+		 * This event is fired before banner download begins.
+		 */
+		public void willLoad(AdViewCore adView);
+
+		/**
+		 * This event is fired after banner content is fully downloaded.
+		 */
+		public void ready(AdViewCore adView);
+		
+		/**
+		 * This event is fired just before an action is fired.
+		 */
+		public void willOpen(AdViewCore adView);
+		
+		/**
+		 * This event is fired when an interstitial closes and your app is again visible.
+		 */
+		public void didClose(AdViewCore adView);
+		
+		/**
+		 * This event is fired after fail to download content.
+		 */
+		public void error(AdViewCore adView, String error);
 	}
 
 	/**
@@ -313,8 +343,9 @@ public abstract class AdViewCore extends WebView {
 	public void setUpdateTime(int updateTime) {
 		boolean b = adReloadPeriod == 0; 
 		this.adReloadPeriod = updateTime * 1000; // milliseconds
-		if (b)
+		if (b) {
 			scheduleUpdate();
+		}
 	}
 
 	private void initialize(Context context, AttributeSet attrs) {
@@ -353,6 +384,7 @@ public abstract class AdViewCore extends WebView {
 			String longitude, String ua,
 			String paramBG, String paramLINK,
 			Hashtable<String, String> customParameters) {
+		this.context = context;
 		adRequest = new AdRequest(adLog);
 		adRequest.initDefaultParameters(context);
 		adRequest
@@ -362,10 +394,10 @@ public abstract class AdViewCore extends WebView {
 				.setLongitude(longitude)
 				.setParamBG(paramBG)
 				.setParamLINK(paramLINK)
-				.setMinSizeX(minSizeX)
-				.setMinSizeY(minSizeY)
-				.setSizeX(sizeX)
-				.setSizeY(sizeY)
+//				.setMinSizeX(minSizeX)
+//				.setMinSizeY(minSizeY)
+//				.setSizeX(sizeX)
+//				.setSizeY(sizeY)
 				.setCustomParameters(customParameters);
 
 		defaultImageResource = defaultImage;
@@ -406,8 +438,8 @@ public abstract class AdViewCore extends WebView {
 
 	@Override
 	protected void onAttachedToWindow() {
-		if (!bGotLayoutParams) {
-			ViewGroup.LayoutParams lp = getLayoutParams();
+		ViewGroup.LayoutParams lp = getLayoutParams();
+		if (!bGotLayoutParams && lp != null) {
 			mInitLayoutHeight = lp.height;
 			mInitLayoutWidth = lp.width;
 			bGotLayoutParams = true;
@@ -468,8 +500,13 @@ public abstract class AdViewCore extends WebView {
 
 	private class LoadContentTask extends AsyncTask<Integer, Integer, String>{
 		
+		private static final int BEGIN_STATE = 0;
+		private static final int END_STATE = 1;
+		private static final int ERROR_STATE = 2;
+
 		private boolean forced;
 		private WebView view;
+		private String error;
 		
 		public LoadContentTask(WebView view, boolean forced) {
 			this.forced = forced;
@@ -504,8 +541,6 @@ public abstract class AdViewCore extends WebView {
 					});
 				}
 				
-				OnAdDownloadAdapter onAdDownload = new OnAdDownloadAdapter();
-	
 				/*
 				 * "type":"video"
 				 * seek: "videourl" & "clickurl"
@@ -523,7 +558,7 @@ public abstract class AdViewCore extends WebView {
 				String videourl = null;
 				String clickurl = null;
 				try {
-					onAdDownload.begin();
+					publishProgress(BEGIN_STATE);
 	
 					data = requestGet(adRequest.createURL());
 					try {
@@ -541,34 +576,60 @@ public abstract class AdViewCore extends WebView {
 								data = (String) jsonObject.get("html");								
 							} else if (TYPE_VIDEO.equals(typeOfBanner)){
 								videourl = jsonObject.getString("videourl");
-								clickurl = jsonObject.getString("clickurl");
 							} else if (TYPE_OFFERWALL.equals(typeOfBanner)){
 								// do nothing
-							} else {// if nothing equal then suppose this is BANNER
+							} else {// if nothing equal then assume this is BANNER
 								typeOfBanner = TYPE_BANNER;
 								data = (String) jsonObject.get("html");
 							}
-						}
 						
-						try {
-							adHeight = Integer.parseInt(jsonObject.getString("adHeight"));
-							adWidth = Integer.parseInt(jsonObject.getString("adWidth"));
-						} catch(NumberFormatException e) {
-							adHeight = -1;
-							adWidth = -1;
+							if(jsonObject.has("clickurl")) {
+								clickurl = jsonObject.getString("clickurl");
+								mClickURL = clickurl;
+							}
+
+							
+							if(jsonObject.has("adHeight")) {
+								try {
+									adHeight = Integer.parseInt(jsonObject.getString("adHeight"));
+								} catch(NumberFormatException e) {
+									adHeight = -1;
+								}
+							}
+							else {
+								adHeight = -1;
+							}
+							if(jsonObject.has("adWidth")) {
+								try {
+									adWidth = Integer.parseInt(jsonObject.getString("adWidth"));
+								} catch(NumberFormatException e) {
+									adWidth = -1;
+								}
+							}
+							else {
+								adWidth = -1;
+							}
 						}
 					
+						publishProgress(END_STATE);
 					} catch (JSONException e) {
-						adLog.log(AdLog.LOG_LEVEL_1, AdLog.LOG_TYPE_ERROR,
-								"Load JSON", e.getMessage());
-						// not json output, assume html
-						typeOfBanner = TYPE_BANNER;
+						if("".equals(data)) {
+							this.error = "server returned an empty response";
+							publishProgress(ERROR_STATE);
+						}
+						else {
+							adLog.log(AdLog.LOG_LEVEL_1, AdLog.LOG_TYPE_ERROR,
+									"Load JSON", e.getMessage());
+							// not json output, assume html
+							typeOfBanner = TYPE_BANNER;
+							publishProgress(END_STATE);
+						}
 					}
-					onAdDownload.end();
 				} catch (Exception e) {
 					adLog.log(AdLog.LOG_LEVEL_1, AdLog.LOG_TYPE_ERROR,
 							"contentThreadAction.requestGet", e.getMessage());
-					onAdDownload.error(e.getMessage());
+					this.error = e.getMessage();
+					publishProgress(ERROR_STATE);
 				}
 				try{
 					if ((data != null) && (data.length() > 0)) {
@@ -626,7 +687,11 @@ public abstract class AdViewCore extends WebView {
 //							d = new Dimensions();
 //							d.x = 0; d.y = 0; d.width = 480; d.height = 480;
 //							Log.d(TAG, videourl);
-							playVideo(videourl, clickurl, false, true, false, false, null, "fullscreen", "exit");
+							boolean audioMuted = false;
+							boolean autoPlay = false;
+							boolean showControls = false;
+							boolean repeat = false;
+							playVideo(videourl, clickurl, audioMuted, autoPlay, showControls, repeat, null, "fullscreen", "exit");
 						} else if (TYPE_OFFERWALL.equals(typeOfBanner)) {
 							data = wrapToHTML(data, mBridgeScriptPath, mScriptPath);
 							mContent = data;
@@ -639,10 +704,30 @@ public abstract class AdViewCore extends WebView {
 				} catch (Exception e) {
 					adLog.log(AdLog.LOG_LEVEL_1, AdLog.LOG_TYPE_ERROR, "LoadContentTask",
 						e.getMessage());
+					e.printStackTrace();
 				}
 				scheduleUpdate();
 				
 				return retData;
+			}
+		}
+		
+		@Override
+		protected void onProgressUpdate (Integer... values) {
+			int state = values[0].intValue();
+
+			if (adDownload != null) {
+				switch(state) {
+				case BEGIN_STATE:
+					adDownload.begin((AdViewCore)this.view);
+					break;
+				case END_STATE:
+					adDownload.end((AdViewCore)this.view);
+					break;
+				case ERROR_STATE:
+					adDownload.error((AdViewCore)this.view, this.error);
+					break;
+				}
 			}
 		}
 		
@@ -711,64 +796,36 @@ public abstract class AdViewCore extends WebView {
 	private class OnAdDownloadAdapter implements OnAdDownload {
 
 		@Override
-		public void begin() {
+		public void begin(AdViewCore adView) {
 			try {
 				if (adDownload != null)
-					adDownload.begin();
+					adDownload.begin(adView);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 
 		@Override
-		public void end() {
+		public void end(AdViewCore adView) {
 			try {
 				if (adDownload != null)
-					adDownload.end();
+					adDownload.end(adView);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 
 		@Override
-		public void error(String error) {
+		public void error(AdViewCore adView, String error) {
 			try {
 				if (adDownload != null)
-					adDownload.error(error);
+					adDownload.error(adView, error);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 
 	}
-
-//	private class RemoveChildsView implements Runnable {
-//		private ViewGroup view;
-//		private int beforChildCount;
-//		private boolean removeOld;
-//
-//		public RemoveChildsView(ViewGroup view, int beforChildCount, boolean removeOld) {
-//			this.view = view;
-//			this.beforChildCount = beforChildCount;
-//			this.removeOld = removeOld;
-//		}
-//
-//		@Override
-//		public void run() {
-//			try {
-//				// view.removeAllViews();
-//				if (removeOld) {
-//					view.removeViews(0, beforChildCount);
-//				} else {
-//					view.removeViews(beforChildCount, view.getChildCount() - beforChildCount);
-//				}
-//
-//			} catch (Exception e) {
-//				adLog.log(AdLog.LOG_LEVEL_1, AdLog.LOG_TYPE_ERROR, "RemoveChildsView",
-//						e.getMessage());
-//			}
-//		}
-//	}
 
 	private class RemoveAllChildViews implements Runnable {
 		private ViewGroup view;
@@ -787,86 +844,6 @@ public abstract class AdViewCore extends WebView {
 			}
 		}
 	}
-
-//	private class SetupVideoAction implements Runnable {
-//		private Context context;
-//		private WebView view;
-//		private String url;
-//		private String clickUrl;
-//
-//		public SetupVideoAction(Context context, WebView view, String url,
-//				String clickUrl) {
-//			this.context = context;
-//			this.view = view;
-//			this.url = url;
-//			this.clickUrl = clickUrl;
-//		}
-//
-//		@Override
-//		public void run() {
-//			try {
-//				if ((url != null) && (url.length() > 0)) {
-//					VideoView videoView = new VideoView(context);
-//					videoView.setLayoutParams(view.getLayoutParams());
-//					videoView.setMediaController(new MediaController(context));
-//
-//					Uri video = Uri.parse(url);
-//					videoView.setVideoURI(video);
-//
-//					videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//						public void onCompletion(MediaPlayer mp) {
-//							try {
-//								mp.seekTo(0);
-//								mp.start();
-//							} catch (Exception e) {
-//								adLog.log(AdLog.LOG_LEVEL_1, AdLog.LOG_TYPE_ERROR,
-//										"SetupVideoAction", e.getMessage());
-//							}
-//						}
-//					});
-//
-//					videoView.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-//
-//						@Override
-//						public boolean onError(MediaPlayer mp, int what, int extra) {
-//							adLog.log(
-//									AdLog.LOG_LEVEL_1,
-//									AdLog.LOG_TYPE_ERROR,
-//									"Play video",
-//									"what=" + String.valueOf(what) + ";extra="
-//											+ String.valueOf(extra));
-//							return true;
-//						}
-//					});
-//
-//					if ((clickUrl != null) && (clickUrl.length() > 0)) {
-//						videoView.setOnClickListener(new View.OnClickListener() {
-//							@Override
-//							public void onClick(View v) {
-//								openUrlInExternalBrowser(context, clickUrl);
-//							}
-//						});
-//						videoView.setOnTouchListener(new View.OnTouchListener() {
-//							@Override
-//							public boolean onTouch(View v, MotionEvent event) {
-//								if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//									openUrlInExternalBrowser(context, clickUrl);
-//								}
-//								return false;
-//							}
-//						});
-//					}
-//
-//					view.addView(videoView);
-//					videoView.start();
-//
-////					view.setBackgroundColor(Color.WHITE);
-//					view.loadDataWithBaseURL(null, "", "text/html", "UTF-8", null);
-//				}
-//			} catch (Exception e) {
-//			}
-//		}
-//	}
 
 	private class AdWebViewClient extends WebViewClient {
 		private Context context;
@@ -930,7 +907,7 @@ public abstract class AdViewCore extends WebView {
 			super.onReceivedError(view, errorCode, description, failingUrl);
 			try {
 				if (adDownload != null) {
-					adDownload.error(description);
+					adDownload.error((AdViewCore)view, description);
 				}
 			} catch (Exception e){
 				e.printStackTrace();
@@ -953,6 +930,7 @@ public abstract class AdViewCore extends WebView {
 			try {
 				Intent intent = new Intent(context, AdActivity.class);
 				intent.setData(Uri.parse(url));
+				intent.putExtra("com.tapit.adview.ClickURL", url);
 				context.startActivity(intent);
 			} catch (ActivityNotFoundException e) {
 				adLog.log(AdLog.LOG_LEVEL_1, AdLog.LOG_TYPE_ERROR, "openUrlInExternalBrowser",
@@ -1401,8 +1379,8 @@ public abstract class AdViewCore extends WebView {
 //		injectJavaScript("Ormma.ready();");
 		
 		
-		mDefaultHeight = (int) (getHeight() / mDensity);
-		mDefaultWidth = (int) (getWidth() / mDensity);
+//		mDefaultHeight = (int) (getHeight() / mDensity);
+//		mDefaultWidth = (int) (getWidth() / mDensity);
 
 //		setVisibility(View.VISIBLE);
 		if (animateBack){
@@ -1489,6 +1467,7 @@ public abstract class AdViewCore extends WebView {
 	}
 
 	/**
+	 * @deprecated
 	 * Optional. Set minimum width of advertising.
 	 * 
 	 * @param minSizeX
@@ -1500,6 +1479,7 @@ public abstract class AdViewCore extends WebView {
 	}
 
 	/**
+	 * @deprecated
 	 * Optional. Get minimum width of advertising.
 	 */
 	public Integer getMinSizeX() {
@@ -1511,6 +1491,7 @@ public abstract class AdViewCore extends WebView {
 	}
 
 	/**
+	 * @deprecated
 	 * Optional. Set minimum height of advertising.
 	 * 
 	 * @param minSizeY
@@ -1522,6 +1503,7 @@ public abstract class AdViewCore extends WebView {
 	}
 
 	/**
+	 * @deprecated
 	 * Optional. Get minimum height of advertising.
 	 */
 	public Integer getMinSizeY() {
@@ -1533,6 +1515,7 @@ public abstract class AdViewCore extends WebView {
 	}
 
 	/**
+	 * @deprecated
 	 * Optional. Set maximum width of advertising.
 	 * 
 	 * @param maxSizeX
@@ -1544,6 +1527,7 @@ public abstract class AdViewCore extends WebView {
 	}
 
 	/**
+	 * @deprecated
 	 * Optional. Get maximum width of advertising.
 	 */
 	public Integer getMaxSizeX() {
@@ -1555,6 +1539,7 @@ public abstract class AdViewCore extends WebView {
 	}
 
 	/**
+	 * @deprecated
 	 * Optional. Set maximum height of advertising.
 	 * 
 	 * @param maxSizeY
@@ -1566,6 +1551,7 @@ public abstract class AdViewCore extends WebView {
 	}
 
 	/**
+	 * @deprecated
 	 * Optional. Get maximum height of advertising.
 	 */
 	public Integer getMaxSizeY() {
@@ -1722,6 +1708,10 @@ public abstract class AdViewCore extends WebView {
 		}
 	}
 
+	public String getClickURL() {
+		return mClickURL;
+	}
+	
 	/**
 	 * 
 	 * AdLog.LOG_LEVEL_NONE	none<br>

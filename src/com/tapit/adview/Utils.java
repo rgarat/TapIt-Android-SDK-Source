@@ -102,12 +102,22 @@ public class Utils {
 	}
 	
 	public static String getDeviceIdMD5(Context context){
+		// Interesting discussion about getting a DeviceId
+		// http://stackoverflow.com/questions/2785485/is-there-a-unique-android-device-id
 		TelephonyManager tm = (TelephonyManager) context
 		.getSystemService(Context.TELEPHONY_SERVICE);
 		String deviceId = tm.getDeviceId();
 		if (deviceId == null) {
 			deviceId = Utils.id(context);
 		}
-		return Utils.md5(deviceId);		
+		return Utils.md5(deviceId);
+		
+		// An alternate implementation that doesn't require the READ_PHONE_STATE permission
+//        String deviceId = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
+//        if(deviceId != null) {
+//        	deviceId = Utils.md5(deviceId);
+//        }
+//		
+//        return deviceId;
 	}
 }

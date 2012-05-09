@@ -27,6 +27,8 @@ public class AdRequest {
 	private static final String PARAMETER_MIN_SIZE_Y = "min_size_y";
 	private static final String PARAMETER_SIZE_X = "size_x";
 	private static final String PARAMETER_SIZE_Y = "size_y";
+	private static final String PARAMETER_HEIGHT = "h";
+	private static final String PARAMETER_WIDTH = "w";
 	private static final String PARAMETER_CONNECTION_SPEED = "connection_speed";
 	public final static String PARAMETER_DEVICE_ID = "udid";
 
@@ -181,6 +183,7 @@ public class AdRequest {
 	}
 
 	/**
+	 * @deprecated
 	 * Optional. Set minimum width of advertising.
 	 * 
 	 * @param minSizeX
@@ -196,6 +199,7 @@ public class AdRequest {
 	}
 
 	/**
+	 * @deprecated
 	 * Optional. Set minimum height of advertising.
 	 * 
 	 * @param minSizeY
@@ -211,6 +215,7 @@ public class AdRequest {
 	}
 
 	/**
+	 * @deprecated
 	 * Optional. Set maximum width of advertising.
 	 * 
 	 * @param sizeX
@@ -226,6 +231,7 @@ public class AdRequest {
 	}
 
 	/**
+	 * @deprecated
 	 * Optional. Set maximum height of advertising.
 	 * 
 	 * @param sizeY
@@ -238,6 +244,38 @@ public class AdRequest {
 			}
 		}
 		return this;
+	}
+
+	public AdRequest setHeight(Integer height) {
+		if ((height != null) && (height > 0)) {
+			synchronized (parameters) {
+				parameters.put(PARAMETER_HEIGHT, String.valueOf(height));
+			}
+		}
+		return this;
+	}
+
+	public Integer getHeight() {
+		synchronized (parameters) {
+			String height = parameters.get(PARAMETER_HEIGHT);
+			return getIntParameter(height);
+		}
+	}
+	
+	public AdRequest setWidth(Integer width) {
+		if ((width != null) && (width > 0)) {
+			synchronized (parameters) {
+				parameters.put(PARAMETER_WIDTH, String.valueOf(width));
+			}
+		}
+		return this;
+	}
+	
+	public Integer getWidth() {
+		synchronized (parameters) {
+			String width = parameters.get(PARAMETER_WIDTH);
+			return getIntParameter(width);
+		}
 	}
 
 	/**
@@ -298,6 +336,9 @@ public class AdRequest {
 		}
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public Integer getMinSizeX() {
 		synchronized (parameters) {
 			String minSizeX = parameters.get(PARAMETER_MIN_SIZE_X);
@@ -305,6 +346,9 @@ public class AdRequest {
 		}
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public Integer getMinSizeY() {
 		synchronized (parameters) {
 			String minSizeY = parameters.get(PARAMETER_MIN_SIZE_Y);
@@ -312,6 +356,9 @@ public class AdRequest {
 		}
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public Integer getSizeX() {
 		synchronized (parameters) {
 			String sizeX = parameters.get(PARAMETER_SIZE_X);
@@ -319,6 +366,9 @@ public class AdRequest {
 		}
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public Integer getSizeY() {
 		synchronized (parameters) {
 			String sizeY = parameters.get(PARAMETER_SIZE_Y);
@@ -370,8 +420,10 @@ public class AdRequest {
 		StringBuilder builderToString = new StringBuilder();
 		String adserverURL = this.adserverURL + "?";
 		builderToString.append(adserverURL);
+		parameters.put("sdk", "android-v" + AdViewCore.VERSION);
 		appendParameters(builderToString, parameters);
 		appendParameters(builderToString, customParameters);
+		
 		return builderToString.toString();// builderToString.toString().equals(adserverURL)
 											// ? this.adserverURL :
 											// builderToString.toString();

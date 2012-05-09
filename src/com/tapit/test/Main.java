@@ -70,27 +70,27 @@ public class Main extends Activity {
 	
 	public void onClick(View view) {
 		switch (view.getId()) {
-		case R.id.button1:
-			showInterstitial();
-			break;
-			
-		case R.id.button2:
-			showFullscreen();
-			
-			break;
-			
-		case R.id.button3:
-			showOfferWall();
-			break;
-
-		case R.id.button4:
-			showVideo();
-			break;
-
-		case R.id.buttonSendRequest:
-			sendRequest();
-			break;
-			
+//		case R.id.button1:
+//			showInterstitial();
+//			break;
+//			
+//		case R.id.button2:
+//			showFullscreen();
+//			
+//			break;
+//			
+//		case R.id.button3:
+//			showOfferWall();
+//			break;
+//
+//		case R.id.button4:
+//			showVideo();
+//			break;
+//
+//		case R.id.buttonSendRequest:
+//			sendRequest();
+//			break;
+//			
 		default:
 			break;
 		}
@@ -105,74 +105,74 @@ public class Main extends Activity {
 	}
 	
 	private void showInterstitial(){
-		AdInterstitialView interstitialView = new AdInterstitialView(this, "3");
-		interstitialView.setLogLevel(AdLog.LOG_TYPE_INFO);
-		interstitialView.setUpdateTime(5);
-		interstitialView.setShowCloseButtonTime(2);
-		interstitialView.setAutoCloseInterstitialTime(0);
-		
-		interstitialView.setIsShowPhoneStatusBar(false);
-		
-		Hashtable<String, String> hashtable = new Hashtable<String, String>();
-		hashtable.put("cid", "1");
-		interstitialView.setCustomParameters(hashtable);
-		
-		interstitialView.show();
+//		AdInterstitialView interstitialView = new AdInterstitialView(this, "3");
+//		interstitialView.setLogLevel(AdLog.LOG_TYPE_INFO);
+//		interstitialView.setUpdateTime(5);
+//		interstitialView.setShowCloseButtonTime(2);
+//		interstitialView.setAutoCloseInterstitialTime(0);
+//		
+//		interstitialView.setIsShowPhoneStatusBar(false);
+//		
+//		Hashtable<String, String> hashtable = new Hashtable<String, String>();
+//		hashtable.put("cid", "1");
+//		interstitialView.setCustomParameters(hashtable);
+//		
+//		interstitialView.show();
 	}
 	
 	private void showFullscreen(){
-		AdFullscreenView fullscreenView = new AdFullscreenView(this, "3");
-		fullscreenView.setLogLevel(AdLog.LOG_TYPE_INFO);
-//		fullscreenView.setUpdateTime(5);
-		fullscreenView.setIsShowPhoneStatusBar(false);
-		fullscreenView.setAutoCloseTime(10);
-		
-//		RelativeLayout.LayoutParams countdownTimerParams = new RelativeLayout.LayoutParams(
-//				RelativeLayout.LayoutParams.WRAP_CONTENT,
-//				RelativeLayout.LayoutParams.WRAP_CONTENT);
+//		AdFullscreenView fullscreenView = new AdFullscreenView(this, "3");
+//		fullscreenView.setLogLevel(AdLog.LOG_TYPE_INFO);
+////		fullscreenView.setUpdateTime(5);
+//		fullscreenView.setIsShowPhoneStatusBar(false);
+//		fullscreenView.setAutoCloseTime(10);
 //		
-//		countdownTimerParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-//		countdownTimerParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
-//		int margin = (int) (12 * getResources().getDisplayMetrics().density);
-//		countdownTimerParams.bottomMargin = margin;
-//		countdownTimerParams.leftMargin = margin;
+////		RelativeLayout.LayoutParams countdownTimerParams = new RelativeLayout.LayoutParams(
+////				RelativeLayout.LayoutParams.WRAP_CONTENT,
+////				RelativeLayout.LayoutParams.WRAP_CONTENT);
+////		
+////		countdownTimerParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+////		countdownTimerParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
+////		int margin = (int) (12 * getResources().getDisplayMetrics().density);
+////		countdownTimerParams.bottomMargin = margin;
+////		countdownTimerParams.leftMargin = margin;
+////		
+////		fullscreenView.setCountdownTimerParams(countdownTimerParams);
+//
+//		Hashtable<String, String> hash = new Hashtable<String, String>();
+//		hash.put("cid", "1");
+//		fullscreenView.setCustomParameters(hash);
 //		
-//		fullscreenView.setCountdownTimerParams(countdownTimerParams);
-
-		Hashtable<String, String> hash = new Hashtable<String, String>();
-		hash.put("cid", "1");
-		fullscreenView.setCustomParameters(hash);
-		
-		fullscreenView.show();
+//		fullscreenView.show();
 	}
 	
 	private void showOfferWall(){
-		AdOfferWallView offerWallView = new AdOfferWallView(this, "3");
-		offerWallView.setIsShowPhoneStatusBar(false);
-		
-//		Button closeButton = new Button(this);
-//		closeButton.setId(1000);
-//		closeButton.setText("Close2");
-//		RelativeLayout.LayoutParams closeLayoutParams = new RelativeLayout.LayoutParams(
-//				RelativeLayout.LayoutParams.WRAP_CONTENT,
-//				RelativeLayout.LayoutParams.WRAP_CONTENT);
-//		closeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-//		closeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
-//		closeButton.setLayoutParams(closeLayoutParams);
-//		offerWallView.setCloseButton(closeButton);
-		
-		offerWallView.show();
+//		AdOfferWallView offerWallView = new AdOfferWallView(this, "3");
+//		offerWallView.setIsShowPhoneStatusBar(false);
+//		
+////		Button closeButton = new Button(this);
+////		closeButton.setId(1000);
+////		closeButton.setText("Close2");
+////		RelativeLayout.LayoutParams closeLayoutParams = new RelativeLayout.LayoutParams(
+////				RelativeLayout.LayoutParams.WRAP_CONTENT,
+////				RelativeLayout.LayoutParams.WRAP_CONTENT);
+////		closeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+////		closeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
+////		closeButton.setLayoutParams(closeLayoutParams);
+////		offerWallView.setCloseButton(closeButton);
+//		
+//		offerWallView.show();
 	}
 	
 	private void showVideo(){
-		AdVideoUnitView adVideoUnitView = new AdVideoUnitView(this, "3");
-		adVideoUnitView.setLogLevel(AdLog.LOG_TYPE_INFO);
-//		adVideoUnitView.setUpdateTime(5);
-		adVideoUnitView.setIsShowPhoneStatusBar(false);
-		adVideoUnitView.setAutoCloseTime(45);
-//		adVideoUnitView.setCloseButtonText("clise3");
-//		adVideoUnitView.setGoToSiteButtonText("go");
-		adVideoUnitView.show();
+//		AdVideoUnitView adVideoUnitView = new AdVideoUnitView(this, "3");
+//		adVideoUnitView.setLogLevel(AdLog.LOG_TYPE_INFO);
+////		adVideoUnitView.setUpdateTime(5);
+//		adVideoUnitView.setIsShowPhoneStatusBar(false);
+//		adVideoUnitView.setAutoCloseTime(45);
+////		adVideoUnitView.setCloseButtonText("clise3");
+////		adVideoUnitView.setGoToSiteButtonText("go");
+//		adVideoUnitView.show();
 	}
 	
 	private void sendRequest(){
