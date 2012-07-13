@@ -8,6 +8,7 @@
 	<property file="local.properties" />
 	
     <property name="release.dir" value="release"/>
+    <property name="dist.dir" value="../../dist"/>
     <property name="sample.tapit.dir" value="${release.dir}\Sample"/>
     <property name="doc.tapit.dir" value="${release.dir}\Documentation"/>
 	<property name="source.tapit.dir" value="${release.dir}\Source"/>	
@@ -25,7 +26,7 @@
 		</target>
 	
 	<target name="release.build.tapit"  depends="compile.sources">
-				<jar destfile="${release.dir}/${jar.name}"
+				<jar destfile="${dist.dir}/${jar.name}"
 			    	basedir="${temp.classes.dir}"
 					manifest="MANIFEST.MF">
 					<fileset dir="js"/>
@@ -129,7 +130,7 @@
 		      <include name="com/tapit/adview/track/InstallTracker.java"/>
 		    </fileset>
 		</javadoc>	
-    	<zip destfile="${release.dir}/javadoc.zip"
+    	<zip destfile="${dist.dir}/javadoc.zip"
  	    	basedir="${doc.tapit.dir}"
 		/>
 		<delete dir="${doc.tapit.dir}"/>

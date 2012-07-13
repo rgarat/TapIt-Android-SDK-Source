@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,6 +31,7 @@ public class AdRequest {
 	private static final String PARAMETER_HEIGHT = "h";
 	private static final String PARAMETER_WIDTH = "w";
 	private static final String PARAMETER_CONNECTION_SPEED = "connection_speed";
+	private static final String PARAMETER_LANGUAGES = "languages";
 	public final static String PARAMETER_DEVICE_ID = "udid";
 
 	private String adserverURL = "http://r.tapit.com/adrequest.php";
@@ -421,6 +423,7 @@ public class AdRequest {
 		String adserverURL = this.adserverURL + "?";
 		builderToString.append(adserverURL);
 		parameters.put("sdk", "android-v" + AdViewCore.VERSION);
+		parameters.put(PARAMETER_LANGUAGES, Locale.getDefault().getLanguage());
 		appendParameters(builderToString, parameters);
 		appendParameters(builderToString, customParameters);
 		
