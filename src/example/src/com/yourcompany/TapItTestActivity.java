@@ -1,5 +1,7 @@
 package com.yourcompany;
 
+import java.util.Hashtable;
+
 import com.tapit.adview.AdFullscreenView;
 import com.tapit.adview.AdInterstitialView;
 import com.tapit.adview.AdOfferWallView;
@@ -42,6 +44,9 @@ public class TapItTestActivity extends Activity implements OnAdDownload, OnInter
         tracker.reportInstall(this, "offer_txt");
         
         bannerAd = (AdView)findViewById(R.id.bannerAd);
+//        Hashtable<String, String> params = new Hashtable<String, String>();
+//        params.put("mode", "test");
+//        bannerAd.setCustomParameters(params);
         bannerAd.setOnAdDownload(this);
 
         setupButtons();
