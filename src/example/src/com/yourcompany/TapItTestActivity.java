@@ -10,7 +10,8 @@ import com.tapit.adview.AdView;
 import com.tapit.adview.AdViewCore;
 import com.tapit.adview.AdViewCore.OnAdDownload;
 import com.tapit.adview.AdViewCore.OnInterstitialAdDownload;
-import com.tapit.adview.notif.TapIt;
+import com.tapit.adview.AlertAd;
+import com.tapit.adview.AlertAd.AlertAdCallbackListener;
 import com.tapit.adview.track.InstallTracker;
 
 import android.app.Activity;
@@ -22,10 +23,11 @@ import android.widget.Button;
 
 public class TapItTestActivity extends Activity implements OnAdDownload, OnInterstitialAdDownload {
 
-	public final static String ZONE_ID = "1";
+	public final static String ZONE_ID = "3667";
 	
 	private Button loadButton;
 	private Button showButton;
+	private Button showAlertAdButton;
 	
 	private AdInterstitialView interstitialAd;
 //	private AdFullscreenView interstitialAd;
@@ -70,13 +72,55 @@ public class TapItTestActivity extends Activity implements OnAdDownload, OnInter
 		    }
 		});
 	 	showButton.setEnabled(false);
+	 	
+	 	final TapItTestActivity me = this;
+	 	showAlertAdButton = (Button)findViewById(R.id.showAlertAdButton);
+	 	showAlertAdButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				me.fireAlertAd();
+			}
+		});
 	}
+    
+    public void fireAlertAd() {
+    	Log.d("TapIt!", "loading Alert ad");
+        AlertAd alertAd = new AlertAd(this, ZONE_ID);
+        Hashtable<String, String> params = new Hashtable<String, String>();
+        params.put("mode", "test");
+        alertAd.setCustomParameters(params);
+        alertAd.setListener(new AlertAdCallbackListener() {
+			
+			@Override
+			public void alertAdError(AlertAd ad, String error) {
+				Log.d("TapIt!", "Alert ad failed to load: " +  error);
+			}
+			
+			@Override
+			public void alertAdDisplayed(AlertAd ad) {
+				Log.d("TapIt!", "Alert ad has been shown");
+				
+			}
+			
+			@Override
+			public void alertAdClosed(AlertAd ad, boolean didAccept) {
+				Log.d("TapIt!", "Alert ad was closed using the " + (didAccept ? "CallToAction" : "Decline") + " button");
+			}
+		});
+        alertAd.showAlertAd();
+    }
+    
     
     public void setupInterstitial() {
     	interstitialAd = new AdInterstitialView(this, ZONE_ID);
 //    	interstitialAd = new AdFullscreenView(this, ZONE_ID);
 //    	interstitialAd = new AdOfferWallView(this, ZONE_ID);
 //    	interstitialAd = new AdVideoUnitView(this, ZONE_ID);
+        Hashtable<String, String> params = new Hashtable<String, String>();
+        params.put("cid", "1");
+        interstitialAd.setCustomParameters(params);
+
     	interstitialAd.setOnInterstitialAdDownload(this);
     }
 

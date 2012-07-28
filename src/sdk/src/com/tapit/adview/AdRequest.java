@@ -12,6 +12,7 @@ import java.util.Set;
 
 import android.content.Context;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 public class AdRequest {
 	public static final String TAG = "AdRequest";
@@ -48,12 +49,14 @@ public class AdRequest {
 
 	public AdRequest(String zone) {
 		setZone(zone);
+		adLog = new AdLog(this);
 	}
 
 	public void initDefaultParameters(Context context) {
 		String deviceIdMD5 = Utils.getDeviceIdMD5(context);
 		String carrierName = Utils.getCarrier(context);
-
+		String ua = Utils.getUserAgentString(context);
+		
 		adLog.log(AdLog.LOG_LEVEL_2, AdLog.LOG_TYPE_INFO, "deviceIdMD5", deviceIdMD5);		
 		if ((deviceIdMD5 != null) && (deviceIdMD5.length() > 0)) {
 			parameters.put(PARAMETER_DEVICE_ID, deviceIdMD5);
@@ -63,6 +66,7 @@ public class AdRequest {
 		parameters.put("sdk", "android-v" + AdViewCore.VERSION);
 		parameters.put(PARAMETER_CARRIER, carrierName);
 		parameters.put(PARAMETER_LANGUAGES, Locale.getDefault().getLanguage());
+		parameters.put(PARAMETER_USER_AGENT, ua);
 	}
 
 	/**
@@ -431,7 +435,9 @@ public class AdRequest {
 		appendParameters(builderToString, parameters);
 		appendParameters(builderToString, customParameters);
 		
-		return builderToString.toString();// builderToString.toString().equals(adserverURL)
+		String url = builderToString.toString();
+//		Log.d("NickTest", url);
+		return url; // builderToString.toString().equals(adserverURL)
 											// ? this.adserverURL :
 											// builderToString.toString();
 	}

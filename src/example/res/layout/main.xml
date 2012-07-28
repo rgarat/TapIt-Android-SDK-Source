@@ -22,9 +22,15 @@
 		    android:text="Show Interstitial"
 		    android:layout_width="fill_parent"
 		    android:layout_height="wrap_content" />	        
+	    <Button
+	        android:id="@+id/showAlertAdButton"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:text="Show Dialog Ad" />
     </LinearLayout>
- 
-    <com.tapit.adview.AdView 
+    
+    
+	<com.tapit.adview.AdView 
         android:id="@+id/bannerAd"
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"
