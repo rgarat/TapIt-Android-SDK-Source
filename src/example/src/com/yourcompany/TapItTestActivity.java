@@ -20,10 +20,15 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class TapItTestActivity extends Activity implements OnAdDownload, OnInterstitialAdDownload {
 
-	public final static String ZONE_ID = "3667";
+	public final static String BANNER_ZONE_ID = "7979";
+	public final static String VIDEO_ZONE_ID = "7981";
+	public final static String MED_RECT_ZONE_ID = "7982";
+	public final static String INTRS_ZONE_ID = "7983";
+	public final static String ADPROMPT_ZONE_ID = "7984";
 	
 	private Button loadButton;
 	private Button showButton;
@@ -86,15 +91,16 @@ public class TapItTestActivity extends Activity implements OnAdDownload, OnInter
     
     public void fireAlertAd() {
     	Log.d("TapIt!", "loading Alert ad");
-        AlertAd alertAd = new AlertAd(this, ZONE_ID);
-        Hashtable<String, String> params = new Hashtable<String, String>();
-        params.put("mode", "test");
-        alertAd.setCustomParameters(params);
+        AlertAd alertAd = new AlertAd(this, ADPROMPT_ZONE_ID);
+//        Hashtable<String, String> params = new Hashtable<String, String>(); 
+//        params.put("mode", "test");
+//        alertAd.setCustomParameters(params);
         alertAd.setListener(new AlertAdCallbackListener() {
 			
 			@Override
 			public void alertAdError(AlertAd ad, String error) {
 				Log.d("TapIt!", "Alert ad failed to load: " +  error);
+				Toast.makeText(getApplicationContext(), "Alert ad failed to load: " +  error, Toast.LENGTH_LONG).show();
 			}
 			
 			@Override
@@ -113,13 +119,13 @@ public class TapItTestActivity extends Activity implements OnAdDownload, OnInter
     
     
     public void setupInterstitial() {
-    	interstitialAd = new AdInterstitialView(this, ZONE_ID);
-//    	interstitialAd = new AdFullscreenView(this, ZONE_ID);
-//    	interstitialAd = new AdOfferWallView(this, ZONE_ID);
-//    	interstitialAd = new AdVideoUnitView(this, ZONE_ID);
-        Hashtable<String, String> params = new Hashtable<String, String>();
-        params.put("cid", "1");
-        interstitialAd.setCustomParameters(params);
+    	interstitialAd = new AdInterstitialView(this, INTRS_ZONE_ID);
+//    	interstitialAd = new AdFullscreenView(this, INTRS_ZONE_ID);
+//    	interstitialAd = new AdOfferWallView(this, INTRS_ZONE_ID);
+//    	interstitialAd = new AdVideoUnitView(this, VIDEO_ZONE_ID);
+//        Hashtable<String, String> params = new Hashtable<String, String>();
+//        params.put("cid", "1");
+//        interstitialAd.setCustomParameters(params);
 
     	interstitialAd.setOnInterstitialAdDownload(this);
     }
@@ -128,22 +134,26 @@ public class TapItTestActivity extends Activity implements OnAdDownload, OnInter
 	public void begin(AdViewCore adView) {
 		// Called just before an ad request is made
         Log.d("TapIt!", "Requesting banner ad");
+        Toast.makeText(getApplicationContext(), "Requesting banner ad", Toast.LENGTH_LONG).show();
 	}
 
 	@Override
 	public void end(AdViewCore adView) {
 		// Called after an ad is successfully loaded... show ad
 		Log.d("TapIt!", "Banner ad successfully loaded");
+		Toast.makeText(getApplicationContext(), "Banner ad successfully loaded", Toast.LENGTH_LONG).show();
 	}
 
 	@Override
 	public void error(AdViewCore adView, String error) {
 		Log.d("TapIt!", "Ad failed to load: " + error);
 		if(adView == interstitialAd) {
+			Toast.makeText(getApplicationContext(), "Failed to load interstitial: " + error, Toast.LENGTH_LONG).show();
 			showButton.setEnabled(false);
 			loadButton.setEnabled(true);
 		}
 		else if(adView == bannerAd) {
+			Toast.makeText(getApplicationContext(), "Failed to load banner: " + error, Toast.LENGTH_LONG).show();
 			// Called when bannerAd fails to load an ad... hide ad
 			Log.d("TapIt!", "Banner ad failed to load: " + error);
 		}

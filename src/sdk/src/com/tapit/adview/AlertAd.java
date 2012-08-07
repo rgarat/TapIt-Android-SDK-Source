@@ -97,38 +97,40 @@ public class AlertAd {
 		final Activity theActivity = (Activity)context;
 		final AlertAdCallbackListener theListener = listener;
 		final AlertAd theAlertAd = this;
-		AlertDialog alertDialog = new AlertDialog.Builder(context).create();
-		alertDialog.setTitle(title);
-		alertDialog.setButton(callToAction, new DialogInterface.OnClickListener() {
+		AlertDialog alertDialog = new AlertDialog.Builder(context)
+			.setPositiveButton(callToAction, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+					// do the thing!
+					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(clickUrl));
+					theActivity.startActivityForResult(intent,2);
+					if(theListener != null) {
+						theListener.alertAdClosed(theAlertAd, true);
+					}
+				}
+			})
+			.setNegativeButton(declineStr, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
-				// do the thing!
-				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(clickUrl));
-				theActivity.startActivityForResult(intent,2);
+				// cancel out...
 				if(theListener != null) {
-					theListener.alertAdClosed(theAlertAd, true);
+					theListener.alertAdClosed(theAlertAd, false);
 				}
 			}
-		});
-		alertDialog.setButton2(declineStr, new DialogInterface.OnClickListener() {
-		      public void onClick(DialogInterface dialog, int which) {
-		    	  // cancel out...
-		    	  if(theListener != null) {
-		    		  theListener.alertAdClosed(theAlertAd, false);
-		    	  }
-		      }
-		});
+			}).create();
+		alertDialog.setTitle(title);
 		
 		alertDialog.show();
 	}
 	
 	private String requestGet(String url) throws IOException {
 		DefaultHttpClient client = new DefaultHttpClient();
+//		Log.d("TapIt", url);
 		HttpGet get = new HttpGet(url);
 		HttpResponse response = client.execute(get);
 		HttpEntity entity = response.getEntity();
 		InputStream inputStream = entity.getContent();
 		BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream, 8192);
 		String responseValue = readInputStream(bufferedInputStream);
+//		Log.d("TapIt", responseValue);
 		bufferedInputStream.close();
 		inputStream.close();
 		return responseValue;
@@ -168,7 +170,7 @@ public class AlertAd {
 		protected void onPostExecute(String jsonStr) {
 			String error = null;
 			try {
-//				Log.d("NickTest", jsonStr);
+//				Log.d("TapIt", jsonStr);
 				JSONObject jsonObject = new JSONObject(jsonStr);
 				if(jsonObject.has("error")) {
 					// failed to retrieve an ad, abort and call the error callback

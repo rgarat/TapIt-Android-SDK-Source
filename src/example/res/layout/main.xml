@@ -26,7 +26,7 @@
 	        android:id="@+id/showAlertAdButton"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
-	        android:text="Show Dialog Ad" />
+	        android:text="Show Alert Ad" />
     </LinearLayout>
     
     
@@ -35,7 +35,7 @@
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
-		zone="3667" />
+		zone="7979" />
 
     
 </RelativeLayout>

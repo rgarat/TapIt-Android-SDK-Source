@@ -31,6 +31,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -53,7 +54,7 @@ import com.tapit.adview.AdLog;
  * Viewer of advertising.
  */
 public abstract class AdViewCore extends WebView {
-	public static final String VERSION = "1.7.0";
+	public static final String VERSION = "1.7.1";
 	public static final String TAG = "AdViewCore";
 
 	private static final long AD_DEFAULT_RELOAD_PERIOD = 120000; // milliseconds
@@ -560,7 +561,8 @@ public abstract class AdViewCore extends WebView {
 				try {
 					publishProgress(BEGIN_STATE);
 	
-					data = requestGet(adRequest.createURL());
+					String url = adRequest.createURL();
+					data = requestGet(url);
 					try {
 						JSONObject jsonObject = new JSONObject(data);
 						if(jsonObject.has("error")) {
@@ -581,6 +583,10 @@ public abstract class AdViewCore extends WebView {
 							} else {// if nothing equal then assume this is BANNER
 								typeOfBanner = TYPE_BANNER;
 								data = (String) jsonObject.get("html");
+								if("".equals(data)) {
+									this.error = "server returned a blank ad";
+									publishProgress(ERROR_STATE);
+								}
 							}
 						
 							if(jsonObject.has("clickurl")) {

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
@@ -155,6 +156,7 @@ public abstract class AdInterstitialBaseView extends AdView implements OnAdDownl
 	}
 	
 	public void click(String url) {
+		Log.d("NickTest", "AdInterstitialBaseView.click(" + url + ")");
 		if (!url.toLowerCase().startsWith("http://") && !url.toLowerCase().startsWith("https://")){
 			Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 	    	Activity thisActivity = ((Activity)callingActivityContext);
