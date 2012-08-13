@@ -97,28 +97,36 @@ public class AlertAd {
 		final Activity theActivity = (Activity)context;
 		final AlertAdCallbackListener theListener = listener;
 		final AlertAd theAlertAd = this;
-		AlertDialog alertDialog = new AlertDialog.Builder(context)
-			.setPositiveButton(callToAction, new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) {
-					// do the thing!
-					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(clickUrl));
-					theActivity.startActivityForResult(intent,2);
-					if(theListener != null) {
-						theListener.alertAdClosed(theAlertAd, true);
-					}
-				}
-			})
-			.setNegativeButton(declineStr, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				// cancel out...
-				if(theListener != null) {
-					theListener.alertAdClosed(theAlertAd, false);
-				}
-			}
-			}).create();
-		alertDialog.setTitle(title);
 		
-		alertDialog.show();
+		try {
+    		AlertDialog alertDialog = new AlertDialog.Builder(context)
+    			.setPositiveButton(callToAction, new DialogInterface.OnClickListener() {
+    				public void onClick(DialogInterface dialog, int which) {
+    					// do the thing!
+    					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(clickUrl));
+    					theActivity.startActivityForResult(intent,2);
+    					if(theListener != null) {
+    						theListener.alertAdClosed(theAlertAd, true);
+    					}
+    				}
+    			})
+    			.setNegativeButton(declineStr, new DialogInterface.OnClickListener() {
+    			public void onClick(DialogInterface dialog, int which) {
+    				// cancel out...
+    				if(theListener != null) {
+    					theListener.alertAdClosed(theAlertAd, false);
+    				}
+    			}
+    			}).create();
+    		alertDialog.setTitle(title);
+    		
+    		alertDialog.show();
+		} catch(Exception e) {
+		    if(listener != null) {
+		        listener.alertAdError(this, e.getMessage());
+		    }
+		    e.printStackTrace();
+		}
 	}
 	
 	private String requestGet(String url) throws IOException {
@@ -157,6 +165,7 @@ public class AlertAd {
 		protected String doInBackground(Integer... params) {
 			
 			String url = adRequest.createURL();
+			Log.d("TapIt", url);
 			String data;
 			try {
 				data = requestGet(url);
@@ -170,7 +179,7 @@ public class AlertAd {
 		protected void onPostExecute(String jsonStr) {
 			String error = null;
 			try {
-//				Log.d("TapIt", jsonStr);
+				Log.d("TapIt", jsonStr);
 				JSONObject jsonObject = new JSONObject(jsonStr);
 				if(jsonObject.has("error")) {
 					// failed to retrieve an ad, abort and call the error callback
