@@ -36,8 +36,10 @@
 		<javac destdir="${temp.classes.dir}" debug="on" debuglevel="lines,source"
 		    excludes="src/com/tapit/test/**">
 			<src path="src\com\tapit\adview" />
+			<src path="src\com\tapit\mediation" />
 			<classpath>
 				<pathelement path="${android.jar}"/>
+				<pathelement path="lib/GoogleAdMobAdsSdk-6.0.1.jar"/>
 		    </classpath>
         </javac>
 	</target>
