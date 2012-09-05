@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.ViewGroup.LayoutParams;
@@ -14,7 +15,8 @@ import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 
 public class AdActivity extends Activity {
-	public static AdInterstitialBaseView adView;
+	public static AdInterstitialBaseView adView; // this will only be set for interstitials
+	public static AdViewCore callingAdView; // this will only be set for banner ads
 
 	protected WebView webView;
 
@@ -38,7 +40,7 @@ public class AdActivity extends Activity {
         }
     }
     
-	private void setupWebView(Bundle savedInstanceState) {
+    private void setupWebView(Bundle savedInstanceState) {
 		getWindow().requestFeature(Window.FEATURE_PROGRESS);
 
 		// Makes Progress bar Visible
@@ -101,6 +103,16 @@ public class AdActivity extends Activity {
 			}
 		});
 	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            finish();
+            return true;
+        }
+        return false;
+    }
+	
 
     @Override
     public void finish() {
@@ -108,6 +120,10 @@ public class AdActivity extends Activity {
     		adView.interstitialClosing();
 	    	adView.removeViews();
 	    	adView = null;
+    	}
+    	if(callingAdView != null) {
+    	    callingAdView.willDismissFullScreen();
+    	    callingAdView = null;
     	}
     	super.finish();
     }

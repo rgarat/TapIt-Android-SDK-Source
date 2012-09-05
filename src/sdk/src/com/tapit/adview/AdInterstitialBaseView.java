@@ -146,17 +146,40 @@ public abstract class AdInterstitialBaseView extends AdView implements OnAdDownl
 		}
 	}
 
+    
+    /**
+     * This event is fired after a user taps the ad.
+     * @param adview
+     */
+    public void clicked(AdViewCore adView) {
+        if(interstitialListener != null) {
+            interstitialListener.clicked(adView);
+        }
+    }
+
+    /**
+     * This event is fired just before the app will be sent to the background.
+     * @param adview
+     */
+    public void willLeaveApplication(AdViewCore adView) {
+        if(interstitialListener != null) {
+            interstitialListener.willLeaveApplication(adView);
+        }
+    }
+
+    
 	/**
 	 * This event is fired after fail to download content.
 	 */
+    @Override
 	public void error(AdViewCore adView, String error) {
 		if(interstitialListener != null) {
 			interstitialListener.error(adView, error);
 		}
 	}
 	
+	@Override
 	public void click(String url) {
-		Log.d("NickTest", "AdInterstitialBaseView.click(" + url + ")");
 		if (!url.toLowerCase().startsWith("http://") && !url.toLowerCase().startsWith("https://")){
 			Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 	    	Activity thisActivity = ((Activity)callingActivityContext);
@@ -168,6 +191,26 @@ public abstract class AdInterstitialBaseView extends AdView implements OnAdDownl
 		}
 	}
 	
+	@Override
+	public void willPresentFullScreen(AdViewCore adView) {
+	    // noop
+	}
+
+	@Override
+	public void didPresentFullScreen(AdViewCore adView) {
+	    // noop
+	}
+
+	@Override
+	public void willDismissFullScreen(AdViewCore adView) {
+	    // noop
+	}
+
+//	@Override
+//	public void didDismissFullScreen(AdViewCore adView) {
+//	    // noop
+//	}
+//	
 	public void setOnInterstitialAdDownload(OnInterstitialAdDownload listener) {
 		interstitialListener = listener;
 	}
@@ -189,7 +232,7 @@ public abstract class AdInterstitialBaseView extends AdView implements OnAdDownl
 	}
 	
 	/**
-	 * called once the interstitial action is full-screened
+	 * called once the interstitial action is closed
 	 */
 	public void interstitialClosing() {
 		// no-op

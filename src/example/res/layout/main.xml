@@ -5,13 +5,14 @@
     android:orientation="vertical" >
 
     <LinearLayout
+        android:id="@+id/mainLayout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
 	    <TextView
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
-	        android:text="@string/hello" />
+	        android:text="@string/tapitButtons" />
 		<Button 
 		    android:id="@+id/loadInterstitialButton"
 		    android:text="Load Interstitial"
@@ -29,6 +30,27 @@
 	        android:text="Show Alert Ad" />
     </LinearLayout>
     
+    <LinearLayout
+        android:id="@+id/googLayout"
+        android:layout_below="@+id/mainLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/googleButtons" />
+        <Button 
+            android:id="@+id/gLoadInterstitialButton"
+            android:text="Load Interstitial"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />         
+        <Button 
+            android:id="@+id/gShowInterstitialButton"
+            android:text="Show Interstitial"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />         
+    </LinearLayout>
     
 	<com.tapit.adview.AdView 
         android:id="@+id/bannerAd"

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, TapItTestActivity!</string>
+    <string name="tapitButtons">TapIt Buttons</string>
+    <string name="googleButtons">Google Buttons</string>
     <string name="app_name">TapItTest</string>
 
 </resources>

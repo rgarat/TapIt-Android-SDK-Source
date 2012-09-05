@@ -2,6 +2,9 @@ package com.yourcompany;
 
 import java.util.Hashtable;
 
+import com.google.ads.Ad;
+import com.google.ads.AdListener;
+import com.google.ads.AdRequest.ErrorCode;
 import com.tapit.adview.AdFullscreenView;
 import com.tapit.adview.AdInterstitialView;
 import com.tapit.adview.AdOfferWallView;
@@ -15,11 +18,13 @@ import com.tapit.adview.AlertAd.AlertAdCallbackListener;
 import com.tapit.adview.track.InstallTracker;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public class TapItTestActivity extends Activity implements OnAdDownload, OnInterstitialAdDownload {
@@ -34,12 +39,18 @@ public class TapItTestActivity extends Activity implements OnAdDownload, OnInter
 	private Button showButton;
 	private Button showAlertAdButton;
 	
+	private Button gLoadButton;
+	private Button gShowButton;
+
 	private AdInterstitialView interstitialAd;
 //	private AdFullscreenView interstitialAd;
 //	private AdOfferWallView interstitialAd;
 //	private AdVideoUnitView interstitialAd;
 	
 	private AdView bannerAd;
+
+	private com.google.ads.AdView googAd;
+	private com.google.ads.InterstitialAd googInterstitial;
 	
 	/** Called when the activity is first created. */
     @Override
@@ -55,8 +66,96 @@ public class TapItTestActivity extends Activity implements OnAdDownload, OnInter
 //        params.put("mode", "test");
 //        bannerAd.setCustomParameters(params);
         bannerAd.setOnAdDownload(this);
+        bannerAd.cancelUpdating();
 
         setupButtons();
+        setupGoog();
+    }
+    
+    
+    private void setupGoog() {
+        googAd = new com.google.ads.AdView(this, com.google.ads.AdSize.BANNER, "903dbd7178b049f7");
+        googAd.setAdListener(new AdListener() {
+
+            @Override
+            public void onDismissScreen(Ad gAd) {
+                Log.d("TapIt", "googAd->onDismissScreen");
+            }
+
+            @Override
+            public void onFailedToReceiveAd(Ad gAd, ErrorCode errCode) {
+                Log.d("TapIt", "googAd->onFailedToReceiveAd: " + errCode);
+            }
+
+            @Override
+            public void onLeaveApplication(Ad gAd) {
+                Log.d("TapIt", "googAd->onLeaveApplication");
+            }
+
+            @Override
+            public void onPresentScreen(Ad gAd) {
+                Log.d("TapIt", "googAd->onPresentScreen");
+            }
+
+            @Override
+            public void onReceiveAd(Ad gAd) {
+                Log.d("TapIt", "googAd->onReceiveAd");
+            }
+            
+        });
+        
+        com.google.ads.AdRequest googAdRequest = new com.google.ads.AdRequest();
+        googAdRequest.addTestDevice(com.google.ads.AdRequest.TEST_EMULATOR);
+        googAdRequest.addTestDevice("ED9A71101B1CD7741894D3D1B181D51B");
+        
+        LinearLayout layout = (LinearLayout)findViewById(R.id.googLayout);
+
+        // Add the adView to it
+        layout.addView(googAd);
+
+        // Initiate a generic request to load it with an ad
+        googAd.loadAd(googAdRequest);
+    }
+    
+    private void setupGoogInterstitial() {
+        com.google.ads.AdRequest googAdRequest = new com.google.ads.AdRequest();
+        googAdRequest.addTestDevice(com.google.ads.AdRequest.TEST_EMULATOR);
+        googAdRequest.addTestDevice("ED9A71101B1CD7741894D3D1B181D51B");
+
+        googInterstitial = new com.google.ads.InterstitialAd(this, "3027767e23364ccf");
+        googInterstitial.loadAd(googAdRequest);
+        googInterstitial.setAdListener(new AdListener() {
+
+            @Override
+            public void onDismissScreen(Ad arg0) {
+                Log.d("TapIt", "googInterstitial->onDismissScreen");
+                gShowButton.setEnabled(false);
+                gLoadButton.setEnabled(true);
+            }
+
+            @Override
+            public void onFailedToReceiveAd(Ad arg0, ErrorCode arg1) {
+                Log.d("TapIt", "googInterstitial->onFailedToReceiveAd: " + arg1);
+                gShowButton.setEnabled(false);
+                gLoadButton.setEnabled(true);
+            }
+
+            @Override
+            public void onLeaveApplication(Ad arg0) {
+                Log.d("TapIt", "googInterstitial->onLeaveApplication");
+            }
+
+            @Override
+            public void onPresentScreen(Ad arg0) {
+                Log.d("TapIt", "googInterstitial->onPresentScreen");
+            }
+
+            @Override
+            public void onReceiveAd(Ad arg0) {
+                Log.d("TapIt", "googInterstitial->onReceiveAd");
+                gShowButton.setEnabled(true);
+            }
+        });
     }
 
     public void setupButtons() {
@@ -87,10 +186,27 @@ public class TapItTestActivity extends Activity implements OnAdDownload, OnInter
 				me.fireAlertAd();
 			}
 		});
-	}
+
+    
+        gLoadButton = (Button)findViewById(R.id.gLoadInterstitialButton);
+        gLoadButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View button) {
+                setupGoogInterstitial();
+            }           
+        });
+        gShowButton = (Button)findViewById(R.id.gShowInterstitialButton);
+        gShowButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View button) {
+                googInterstitial.show();
+            }
+        });
+        gShowButton.setEnabled(false);
+    }
     
     public void fireAlertAd() {
-    	Log.d("TapIt!", "loading Alert ad");
+    	Log.d("TapIt", "loading Alert ad");
         AlertAd alertAd = new AlertAd(this, ADPROMPT_ZONE_ID);
 //        Hashtable<String, String> params = new Hashtable<String, String>(); 
 //        params.put("mode", "test");
@@ -99,19 +215,19 @@ public class TapItTestActivity extends Activity implements OnAdDownload, OnInter
 			
 			@Override
 			public void alertAdError(AlertAd ad, String error) {
-				Log.d("TapIt!", "Alert ad failed to load: " +  error);
+				Log.d("TapIt", "Alert ad failed to load: " +  error);
 				Toast.makeText(getApplicationContext(), "Alert ad failed to load: " +  error, Toast.LENGTH_LONG).show();
 			}
 			
 			@Override
 			public void alertAdDisplayed(AlertAd ad) {
-				Log.d("TapIt!", "Alert ad has been shown");
+				Log.d("TapIt", "Alert ad has been shown");
 				
 			}
 			
 			@Override
 			public void alertAdClosed(AlertAd ad, boolean didAccept) {
-				Log.d("TapIt!", "Alert ad was closed using the " + (didAccept ? "CallToAction" : "Decline") + " button");
+				Log.d("TapIt", "Alert ad was closed using the " + (didAccept ? "CallToAction" : "Decline") + " button");
 			}
 		});
         alertAd.showAlertAd();
@@ -140,13 +256,13 @@ public class TapItTestActivity extends Activity implements OnAdDownload, OnInter
 	@Override
 	public void end(AdViewCore adView) {
 		// Called after an ad is successfully loaded... show ad
-		Log.d("TapIt!", "Banner ad successfully loaded");
+		Log.d("TapIt", "Banner ad successfully loaded");
 		Toast.makeText(getApplicationContext(), "Banner ad successfully loaded", Toast.LENGTH_LONG).show();
 	}
 
 	@Override
 	public void error(AdViewCore adView, String error) {
-		Log.d("TapIt!", "Ad failed to load: " + error);
+		Log.d("TapIt", "Ad failed to load: " + error);
 		if(adView == interstitialAd) {
 			Toast.makeText(getApplicationContext(), "Failed to load interstitial: " + error, Toast.LENGTH_LONG).show();
 			showButton.setEnabled(false);
@@ -162,47 +278,94 @@ public class TapItTestActivity extends Activity implements OnAdDownload, OnInter
 	@Override
 	public void willLoad(AdViewCore adView) {
 		// interstitial is about to load
-		Log.d("TapIt!", "WillLoad");
+		Log.d("TapIt", "WillLoad");
+        Toast.makeText(getApplicationContext(), "WillLoad", Toast.LENGTH_LONG).show();
 	}
 
 	@Override
 	public void ready(AdViewCore adView) {
 		// interstitial is loaded and ready for display
-		Log.d("TapIt!", "ready!");
+		Log.d("TapIt", "ready!");
 		showButton.setEnabled(true);
+        Toast.makeText(getApplicationContext(), "ready!", Toast.LENGTH_LONG).show();
 	}
 
 	@Override
 	public void willOpen(AdViewCore adView) {
 		// interstitial is about to cover the screen. minimize your app footprint
-		Log.d("TapIt!", "WillOpen");
+		Log.d("TapIt", "WillOpen");
+        Toast.makeText(getApplicationContext(), "WillOpen", Toast.LENGTH_LONG).show();
 	}
 
 	@Override
 	public void didClose(AdViewCore adView) {
 		// interstitial is no longer covering the screen
-		Log.d("TapIt!", "didClose");
-		
+		Log.d("TapIt", "didClose");
+        Toast.makeText(getApplicationContext(), "didClose", Toast.LENGTH_LONG).show();
+
 		destroyInterstitial();
 		loadButton.setEnabled(true);
 	 	showButton.setEnabled(false);
 	}
-	
-	private void destroyInterstitial() {
-		if(interstitialAd != null) {
-			interstitialAd.destroy();
-			interstitialAd = null;
-		}
-	}
-	
-	@Override
-	protected void onDestroy() {
-		AdView bannerAd = (AdView)findViewById(R.id.bannerAd);
-		if(bannerAd != null) {
-			// Shutdown ad internals
-			bannerAd.destroy();
-		}
-		destroyInterstitial();
-		super.onDestroy();
-	}
+
+
+    @Override
+    public void clicked(AdViewCore adView) {
+        Log.d("TapIt", "Ad clicked");
+        Toast.makeText(getApplicationContext(), "Ad clicked", Toast.LENGTH_LONG).show();
+    }
+
+
+    @Override
+    public void willPresentFullScreen(AdViewCore adView) {
+      Log.d("TapIt", "willPresentFullScreen");
+      Toast.makeText(getApplicationContext(), "willPresentFullScreen", Toast.LENGTH_LONG).show();
+    }
+
+
+    @Override
+    public void didPresentFullScreen(AdViewCore adView) {
+      Log.d("TapIt", "didPresentFullScreen");
+      Toast.makeText(getApplicationContext(), "didPresentFullScreen", Toast.LENGTH_LONG).show();
+    }
+
+
+    @Override
+    public void willDismissFullScreen(AdViewCore adView) {
+      Log.d("TapIt", "willDismissFullScreen");
+      Toast.makeText(getApplicationContext(), "willDismissFullScreen", Toast.LENGTH_LONG).show();
+    }
+
+
+//    @Override
+//    public void didDismissFullScreen(AdViewCore adView) {
+//      Log.d("TapIt", "didDismissFullScreen");
+//      Toast.makeText(getApplicationContext(), "didDismissFullScreen", Toast.LENGTH_LONG).show();
+//    }
+//
+//
+    @Override
+    public void willLeaveApplication(AdViewCore adView) {
+      Log.d("TapIt", "Leaving Application!");
+      Toast.makeText(getApplicationContext(), "Leaving Application!", Toast.LENGTH_LONG).show();
+    }
+
+    
+    private void destroyInterstitial() {
+        if(interstitialAd != null) {
+            interstitialAd.destroy();
+            interstitialAd = null;
+        }
+    }
+    
+    @Override
+    protected void onDestroy() {
+        AdView bannerAd = (AdView)findViewById(R.id.bannerAd);
+        if(bannerAd != null) {
+            // Shutdown ad internals
+            bannerAd.destroy();
+        }
+        destroyInterstitial();
+        super.onDestroy();
+    }
 }

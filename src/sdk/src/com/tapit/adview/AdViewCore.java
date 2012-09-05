@@ -54,7 +54,7 @@ import com.tapit.adview.AdLog;
  * Viewer of advertising.
  */
 public abstract class AdViewCore extends WebView {
-	public static final String VERSION = "1.7.2";
+	public static final String VERSION = "1.7.3";
 	public static final String TAG = "AdViewCore";
 
 	private static final long AD_DEFAULT_RELOAD_PERIOD = 120000; // milliseconds
@@ -243,6 +243,36 @@ public abstract class AdViewCore extends WebView {
 		 * This event is fired after fail to download content.
 		 */
 		public void error(AdViewCore adView, String error);
+		
+		/**
+		 * This event is fired after a user taps the ad.
+		 * @param adView
+		 */
+		public void clicked(AdViewCore adView);
+
+		/**
+		 * This event is fired just before an ad takes over the screen.
+		 * @param adView
+		 */
+        public void willPresentFullScreen(AdViewCore adView);
+        
+        /**
+         * This event is fired once an ad takes over the screen.
+         * @param adView
+         */
+        public void didPresentFullScreen(AdViewCore adView);
+        
+        /**
+         * This even is fired just before an ad dismisses it's full screen view.
+         * @param adView
+         */
+        public void willDismissFullScreen(AdViewCore adView);
+        
+        /**
+         * This event is fired just before the app will be sent to the background.
+         * @param adView
+         */
+        public void willLeaveApplication(AdViewCore adView);
 	}
 
 	/**
@@ -265,14 +295,26 @@ public abstract class AdViewCore extends WebView {
 		public void willOpen(AdViewCore adView);
 		
 		/**
-		 * This event is fired when an interstitial closes and your app is again visible.
+		 * This event is fired after an interstitial closes and your app is again visible.
 		 */
 		public void didClose(AdViewCore adView);
 		
 		/**
-		 * This event is fired after fail to download content.
+		 * This event is fired if the interstitial request fails to return an ad.
 		 */
 		public void error(AdViewCore adView, String error);
+
+		/**
+		 * This event is fired after a user taps the ad.
+		 * @param adview
+		 */
+		public void clicked(AdViewCore adView);
+
+		/**
+		 * This event is fired just before the app will be sent to the background.
+		 * @param adview
+		 */
+		public void willLeaveApplication(AdViewCore adView);
 	}
 
 	/**
@@ -377,7 +419,7 @@ public abstract class AdViewCore extends WebView {
 		}
 	}
 
-	private void loadContent(Context context,
+    private void loadContent(Context context,
 			Integer minSizeX, Integer minSizeY, Integer sizeX, Integer sizeY,
 			Integer defaultImage,
 			String zone,
@@ -801,40 +843,7 @@ public abstract class AdViewCore extends WebView {
 		}
 	}
 	
-	private class OnAdDownloadAdapter implements OnAdDownload {
-
-		@Override
-		public void begin(AdViewCore adView) {
-			try {
-				if (adDownload != null)
-					adDownload.begin(adView);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		@Override
-		public void end(AdViewCore adView) {
-			try {
-				if (adDownload != null)
-					adDownload.end(adView);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		@Override
-		public void error(AdViewCore adView, String error) {
-			try {
-				if (adDownload != null)
-					adDownload.error(adView, error);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-	}
-
+	
 	private class RemoveAllChildViews implements Runnable {
 		private ViewGroup view;
 
@@ -871,16 +880,30 @@ public abstract class AdViewCore extends WebView {
 					int isAccessNetworkState = context
 							.checkCallingOrSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE);
 
+					if(adDownload != null) {
+					    adDownload.clicked((AdViewCore)view);
+					}
 					if (isAccessNetworkState == PackageManager.PERMISSION_GRANTED) {
 						if (isInternetAvailable(context)) {
 							adLog.log(AdLog.LOG_LEVEL_2, AdLog.LOG_TYPE_INFO, "OverrideUrlLoading - openUrlInExternalBrowser", url);
+							if(adDownload != null) {
+							    adDownload.willPresentFullScreen((AdViewCore)view);
+							}
 							openUrlInExternalBrowser(context, url);
+							if(adDownload != null) {
+							    adDownload.didPresentFullScreen((AdViewCore)view);
+							}
+							
 						} else {
 							Toast.makeText(context, "Internet is not available", Toast.LENGTH_LONG)
 									.show();
 						}
 					} else if (isAccessNetworkState == PackageManager.PERMISSION_DENIED) {
 						adLog.log(AdLog.LOG_LEVEL_2, AdLog.LOG_TYPE_INFO, "OverrideUrlLoading - openUrlInExternalBrowser", url);
+						if(adDownload != null) {
+						    adDownload.willPresentFullScreen((AdViewCore)view);
+						    adDownload.willLeaveApplication((AdViewCore)view);
+						}
 						openUrlInExternalBrowser(context, url);
 					}
 				}
@@ -936,6 +959,7 @@ public abstract class AdViewCore extends WebView {
 		
 		if (openInInternalBrowser){
 			try {
+			    AdActivity.callingAdView = this;
 				Intent intent = new Intent(context, AdActivity.class);
 				intent.setData(Uri.parse(url));
 				intent.putExtra("com.tapit.adview.ClickURL", url);
@@ -956,6 +980,9 @@ public abstract class AdViewCore extends WebView {
 			}			
 		} else {
 			try {
+			    if(adDownload != null) {
+			        adDownload.willLeaveApplication(this);
+			    }
 				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 				context.startActivity(intent);
 			} catch (Exception e) {
@@ -963,6 +990,15 @@ public abstract class AdViewCore extends WebView {
 						e.getMessage());
 			}
 		}
+	}
+	
+	/**
+	 * Hackish inter-activity communication... should only be called by AdActivity...
+	 */
+	void willDismissFullScreen() {
+	    if(adDownload != null) {
+	        adDownload.willDismissFullScreen(this);
+	    }
 	}
 
 	private boolean isInternetAvailable(Context context) {

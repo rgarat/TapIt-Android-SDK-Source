@@ -179,7 +179,7 @@ public class AdView extends AdViewCore {
 	 * stop ad from automatically reloading
 	 */
 	@Override
-	protected void cancelUpdating() {
+	public void cancelUpdating() {
 		if ((locationManager != null) && (listener != null)) {
 			locationManager.removeUpdates(listener);
 		}
