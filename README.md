@@ -20,4 +20,4 @@ alertAd.setCustomParameters(params);
 alertAd.showAlertAd();
 ````
 
-Sample implementation can be found here: https://github.com/tapit/TapIt-Android-SDK-Source/blob/master/src/example/src/com/yourcompany/TapItTestActivity.java#L87
+Sample implementation can be found here: https://github.com/tapit/TapIt-Android-SDK-Source/blob/master/src/example/src/com/yourcompany/TapItTestActivity.java#L208
