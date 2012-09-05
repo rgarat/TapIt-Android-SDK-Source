@@ -90,7 +90,7 @@ public final class AdMobAdapter
 		AdSize bestSize = adSize.findBestSize(supportedSizes);
 		
 		if(bestSize ==  null) {
-		    listener.onFailedToReceiveAd(AdMobAdapter.this, ErrorCode.NO_FILL);
+		    listener.onFailedToReceiveAd(AdMobAdapter.this, ErrorCode.INVALID_REQUEST);
 		    return;
 		}
 		
