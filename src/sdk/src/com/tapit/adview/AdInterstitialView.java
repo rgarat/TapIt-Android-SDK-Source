@@ -38,10 +38,11 @@ public class AdInterstitialView extends AdInterstitialBaseView {
         StateListDrawable states = new StateListDrawable();
 
         try {
-	        states.addState(new int[] {-android.R.attr.state_pressed},
-	                getResources().getDrawable(getResourceIdByName(context.getPackageName(), "drawable", "tapit_interstitial_close_button_normal")));
-	        states.addState(new int[] {android.R.attr.state_pressed},
-	                getResources().getDrawable(getResourceIdByName(context.getPackageName(), "drawable", "tapit_interstitial_close_button_pressed")));
+            states.addState(new int[] {-android.R.attr.state_pressed}, getResources().getDrawable(android.R.drawable.ic_notification_clear_all));
+//	        states.addState(new int[] {-android.R.attr.state_pressed},
+//	                getResources().getDrawable(getResourceIdByName(context.getPackageName(), "drawable", "tapit_interstitial_close_button_normal")));
+//	        states.addState(new int[] {android.R.attr.state_pressed},
+//	                getResources().getDrawable(getResourceIdByName(context.getPackageName(), "drawable", "tapit_interstitial_close_button_pressed")));
         } catch(RuntimeException e) {
         	e.printStackTrace();
         }

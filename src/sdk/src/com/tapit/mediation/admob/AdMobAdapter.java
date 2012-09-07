@@ -18,6 +18,7 @@ import com.tapit.adview.AdViewCore.OnAdDownload;
 import com.tapit.adview.AdViewCore.OnInterstitialAdDownload;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -73,7 +74,6 @@ public final class AdMobAdapter
 		
 		AdSize supportedSizes[] = {
 		        // banners
-		        new AdSize(468, 60),
 		        new AdSize(320, 50),
 		        new AdSize(300, 50),
 		        new AdSize(216, 36),
@@ -103,7 +103,8 @@ public final class AdMobAdapter
 		
 		bannerAd.setCustomParameters(params);
 		bannerAd.setOnAdDownload(this);
-		bannerAd.update(true);
+		bannerAd.setUpdateTime(Integer.MAX_VALUE); // defer ad rotation to admob
+		bannerAd.update(true); // kick off the ad request
 	}
 
 	@Override
@@ -156,7 +157,10 @@ public final class AdMobAdapter
 	@Override
 	public void end(AdViewCore adView) {
 	    if(bannerListener != null) {
-	        bannerListener.onReceivedAd(AdMobAdapter.this);
+	        if(bannerAd.getParent() == null) {
+	            // only add the bannerAd to the view once...
+	            bannerListener.onReceivedAd(AdMobAdapter.this);
+	        }
 	    }
 	}
 
@@ -194,15 +198,8 @@ public final class AdMobAdapter
 
 	@Override
 	public void willPresentFullScreen(AdViewCore adView) {
-	    if (adView == bannerAd) {
-	        if(bannerListener != null) {
-	            bannerListener.onPresentScreen(AdMobAdapter.this);
-	        }
-	    }
-	    else {
-	        if(interstitialListener != null) {
-	            interstitialListener.onPresentScreen(AdMobAdapter.this);
-	        }
+	    if(bannerListener != null) {
+	        bannerListener.onPresentScreen(AdMobAdapter.this);
 	    }
 	}
 
@@ -220,15 +217,8 @@ public final class AdMobAdapter
 
 	@Override
 	public void willLeaveApplication(AdViewCore adView) {
-	    if (adView == bannerAd) {
-	        if(bannerListener != null) {
-	            bannerListener.onLeaveApplication(AdMobAdapter.this);
-	        }
-	    }
-	    else {
-	        if(interstitialListener != null) {
-	            interstitialListener.onLeaveApplication(AdMobAdapter.this);
-	        }
+	    if(bannerListener != null) {
+	        bannerListener.onLeaveApplication(AdMobAdapter.this);
 	    }
 	}
 	
