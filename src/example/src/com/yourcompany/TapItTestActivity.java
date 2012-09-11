@@ -1,24 +1,6 @@
 package com.yourcompany;
 
-import java.util.Hashtable;
-
-import com.google.ads.Ad;
-import com.google.ads.AdListener;
-import com.google.ads.AdRequest.ErrorCode;
-import com.tapit.adview.AdFullscreenView;
-import com.tapit.adview.AdInterstitialView;
-import com.tapit.adview.AdOfferWallView;
-import com.tapit.adview.AdVideoUnitView;
-import com.tapit.adview.AdView;
-import com.tapit.adview.AdViewCore;
-import com.tapit.adview.AdViewCore.OnAdDownload;
-import com.tapit.adview.AdViewCore.OnInterstitialAdDownload;
-import com.tapit.adview.AlertAd;
-import com.tapit.adview.AlertAd.AlertAdCallbackListener;
-import com.tapit.adview.track.InstallTracker;
-
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +8,17 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import com.google.ads.Ad;
+import com.google.ads.AdListener;
+import com.google.ads.AdRequest.ErrorCode;
+import com.tapit.adview.AdInterstitialView;
+import com.tapit.adview.AdView;
+import com.tapit.adview.AdViewCore;
+import com.tapit.adview.AdViewCore.OnAdDownload;
+import com.tapit.adview.AdViewCore.OnInterstitialAdDownload;
+import com.tapit.adview.AlertAd;
+import com.tapit.adview.AlertAd.AlertAdCallbackListener;
+import com.tapit.adview.track.InstallTracker;
 
 public class TapItTestActivity extends Activity implements OnAdDownload, OnInterstitialAdDownload {
 
@@ -249,7 +242,7 @@ public class TapItTestActivity extends Activity implements OnAdDownload, OnInter
 	@Override
 	public void begin(AdViewCore adView) {
 		// Called just before an ad request is made
-        Log.d("TapIt!", "Requesting banner ad");
+        Log.d("TapIt", "Requesting banner ad");
         Toast.makeText(getApplicationContext(), "Requesting banner ad", Toast.LENGTH_LONG).show();
 	}
 
@@ -271,7 +264,7 @@ public class TapItTestActivity extends Activity implements OnAdDownload, OnInter
 		else if(adView == bannerAd) {
 			Toast.makeText(getApplicationContext(), "Failed to load banner: " + error, Toast.LENGTH_LONG).show();
 			// Called when bannerAd fails to load an ad... hide ad
-			Log.d("TapIt!", "Banner ad failed to load: " + error);
+			Log.d("TapIt", "Banner ad failed to load: " + error);
 		}
 	}
 

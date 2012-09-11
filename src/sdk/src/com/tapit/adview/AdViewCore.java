@@ -153,8 +153,6 @@ public abstract class AdViewCore extends WebView {
 	 * 
 	 * @param context
 	 *            - The reference to the context of Activity.
-	 * @param site
-	 *            - The id of the publisher site.
 	 * @param zone
 	 *            - The id of the zone of publisher site.
 	 */
@@ -306,13 +304,13 @@ public abstract class AdViewCore extends WebView {
 
 		/**
 		 * This event is fired after a user taps the ad.
-		 * @param adview
+		 * @param adView
 		 */
 		public void clicked(AdViewCore adView);
 
 		/**
 		 * This event is fired just before the app will be sent to the background.
-		 * @param adview
+		 * @param adView
 		 */
 		public void willLeaveApplication(AdViewCore adView);
 	}
@@ -335,8 +333,6 @@ public abstract class AdViewCore extends WebView {
 
 	/**
 	 * Optional. Get Custom Parameters.
-	 * 
-	 * @param customParameters
 	 */
 	public Hashtable<String, String> getCustomParameters() {
 		if (adRequest != null) {
@@ -968,6 +964,9 @@ public abstract class AdViewCore extends WebView {
 				adLog.log(AdLog.LOG_LEVEL_1, AdLog.LOG_TYPE_ERROR, "openUrlInExternalBrowser",
 						e.getMessage() + " - Page will open in system browser.");
 				try {
+	                if(adDownload != null) {
+	                    adDownload.willLeaveApplication(this);
+	                }
 					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 					context.startActivity(intent);
 				} catch (Exception ex) {

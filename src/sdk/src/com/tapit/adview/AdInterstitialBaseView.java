@@ -86,8 +86,10 @@ public abstract class AdInterstitialBaseView extends AdView implements OnAdDownl
 		}
 	}
 
-	
-	public void closeInterstitial() {
+    public void closeInterstitial() {
+        closeInterstitial(true);
+    }	
+	public void closeInterstitial(final boolean shouldFireCloseCallback) {
 		final AdInterstitialBaseView adView = this;
 		handler.post(new Runnable() {
 			@Override
@@ -97,7 +99,7 @@ public abstract class AdInterstitialBaseView extends AdView implements OnAdDownl
 					return;
 				}
 				((Activity)callingActivityContext).finish();
-				if(interstitialListener != null) {
+				if(shouldFireCloseCallback && interstitialListener != null) {
 					interstitialListener.didClose(adView);
 				}
 				
@@ -149,7 +151,7 @@ public abstract class AdInterstitialBaseView extends AdView implements OnAdDownl
     
     /**
      * This event is fired after a user taps the ad.
-     * @param adview
+     * @param adView
      */
     public void clicked(AdViewCore adView) {
         if(interstitialListener != null) {
@@ -159,7 +161,7 @@ public abstract class AdInterstitialBaseView extends AdView implements OnAdDownl
 
     /**
      * This event is fired just before the app will be sent to the background.
-     * @param adview
+     * @param adView
      */
     public void willLeaveApplication(AdViewCore adView) {
         if(interstitialListener != null) {
@@ -181,10 +183,14 @@ public abstract class AdInterstitialBaseView extends AdView implements OnAdDownl
 	@Override
 	public void click(String url) {
 		if (!url.toLowerCase().startsWith("http://") && !url.toLowerCase().startsWith("https://")){
-			Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+		    if(interstitialListener != null) {
+		        interstitialListener.willLeaveApplication(this);
+		    }
+		    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 	    	Activity thisActivity = ((Activity)callingActivityContext);
 	    	thisActivity.startActivityForResult(intent,2);
-	    	closeInterstitial();
+	    	boolean shouldFireCloseCallback = false;
+	    	closeInterstitial(shouldFireCloseCallback);
 		}
 		else {
 			loadUrl(url);
@@ -211,6 +217,10 @@ public abstract class AdInterstitialBaseView extends AdView implements OnAdDownl
 //	    // noop
 //	}
 //	
+	public OnInterstitialAdDownload getOnInterstitialAdDownload() {
+	    return interstitialListener;
+	}
+	
 	public void setOnInterstitialAdDownload(OnInterstitialAdDownload listener) {
 		interstitialListener = listener;
 	}

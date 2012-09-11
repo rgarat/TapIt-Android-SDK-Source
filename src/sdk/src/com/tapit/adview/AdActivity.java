@@ -1,5 +1,7 @@
 package com.tapit.adview;
 
+import com.tapit.adview.AdViewCore.OnInterstitialAdDownload;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -64,6 +66,12 @@ public class AdActivity extends Activity {
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
 				if (!url.toLowerCase().startsWith("http://") && !url.toLowerCase().startsWith("https://")){
 					try {
+					    if(adView != null) {
+					        OnInterstitialAdDownload listener = adView.getOnInterstitialAdDownload();
+					        if(listener != null) {
+					            listener.willLeaveApplication(adView);
+					        }
+					    }
 						Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 						startActivityForResult(intent,3);

@@ -139,7 +139,7 @@ public final class AdMobAdapter
 
 	@Override
 	public View getBannerView() {
-		return (View)bannerAd;
+		return bannerAd;
 	}
 
 	/**
@@ -217,8 +217,11 @@ public final class AdMobAdapter
 
 	@Override
 	public void willLeaveApplication(AdViewCore adView) {
-	    if(bannerListener != null) {
+	    if(adView == bannerAd && bannerListener != null) {
 	        bannerListener.onLeaveApplication(AdMobAdapter.this);
+	    }
+		else if(adView == interstitialAd && interstitialListener != null) {
+		    interstitialListener.onLeaveApplication(AdMobAdapter.this);
 	    }
 	}
 	
