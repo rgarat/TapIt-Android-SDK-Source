@@ -25,7 +25,7 @@ public class AdActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         String clickURL = getIntent().getStringExtra("com.tapit.adview.ClickURL");
         if(clickURL != null) {
         	setupWebView(savedInstanceState);
@@ -37,11 +37,11 @@ public class AdActivity extends Activity {
 	        }
 	        else {
 	        	finish();
-	        	
+
 	        }
         }
     }
-    
+
     private void setupWebView(Bundle savedInstanceState) {
 		getWindow().requestFeature(Window.FEATURE_PROGRESS);
 
@@ -60,7 +60,7 @@ public class AdActivity extends Activity {
 		webView.getSettings().setUseWideViewPort(true);
 
 		setContentView(webView);
-		
+
 		webView.setWebViewClient(new WebViewClient() {
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -72,18 +72,18 @@ public class AdActivity extends Activity {
 					            listener.willLeaveApplication(adView);
 					        }
 					    }
+						else if(callingAdView != null) {
+						    AdViewCore.OnAdDownload listener = callingAdView.getOnAdDownload();
+						    if(listener != null) {
+							    listener.willLeaveApplication(callingAdView);
+						    }
+					    }
 						Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 						startActivityForResult(intent,3);
 					}
 					catch(Exception e) {
 						e.printStackTrace();
-					}
-					if(adView != null) {
-						adView.closeInterstitial();
-					}
-					else {
-						finish();
 					}
 					return true;
 				}
@@ -111,16 +111,16 @@ public class AdActivity extends Activity {
 			}
 		});
 	}
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            finish();
+		        finish();
             return true;
         }
         return false;
     }
-	
+
 
     @Override
     public void finish() {
@@ -135,9 +135,15 @@ public class AdActivity extends Activity {
     	}
     	super.finish();
     }
-    
-    
-    @Override
+
+	@Override
+	protected void onRestart(){
+		super.onRestart();
+		// close activity when app returns to foreground
+		finish();
+	}
+
+	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(adView != null) {

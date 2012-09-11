@@ -87,9 +87,6 @@ public abstract class AdInterstitialBaseView extends AdView implements OnAdDownl
 	}
 
     public void closeInterstitial() {
-        closeInterstitial(true);
-    }	
-	public void closeInterstitial(final boolean shouldFireCloseCallback) {
 		final AdInterstitialBaseView adView = this;
 		handler.post(new Runnable() {
 			@Override
@@ -99,7 +96,7 @@ public abstract class AdInterstitialBaseView extends AdView implements OnAdDownl
 					return;
 				}
 				((Activity)callingActivityContext).finish();
-				if(shouldFireCloseCallback && interstitialListener != null) {
+				if(interstitialListener != null) {
 					interstitialListener.didClose(adView);
 				}
 				
@@ -189,8 +186,6 @@ public abstract class AdInterstitialBaseView extends AdView implements OnAdDownl
 		    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 	    	Activity thisActivity = ((Activity)callingActivityContext);
 	    	thisActivity.startActivityForResult(intent,2);
-	    	boolean shouldFireCloseCallback = false;
-	    	closeInterstitial(shouldFireCloseCallback);
 		}
 		else {
 			loadUrl(url);
@@ -258,7 +253,7 @@ public abstract class AdInterstitialBaseView extends AdView implements OnAdDownl
 
 	    return super.onKeyDown(keyCode, event);
 	}
-	
+
 	/**
 	 * Allows lookup of resource id's from jars at runtime
 	 * http://stackoverflow.com/questions/1995004/packaging-android-resource-files-within-a-distributable-jar-file/2825174#7117422

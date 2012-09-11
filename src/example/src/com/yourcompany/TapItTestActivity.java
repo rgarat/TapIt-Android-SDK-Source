@@ -68,6 +68,7 @@ public class TapItTestActivity extends Activity implements OnAdDownload, OnInter
     
     private void setupGoog() {
         googAd = new com.google.ads.AdView(this, com.google.ads.AdSize.BANNER, "903dbd7178b049f7");
+//        googAd = new com.google.ads.AdView(this, AdSize.IAB_MRECT, "903dbd7178b049f7");
         googAd.setAdListener(new AdListener() {
 
             @Override
@@ -94,7 +95,7 @@ public class TapItTestActivity extends Activity implements OnAdDownload, OnInter
             public void onReceiveAd(Ad gAd) {
                 Log.d("TapIt", "googAd->onReceiveAd");
             }
-            
+
         });
         
         com.google.ads.AdRequest googAdRequest = new com.google.ads.AdRequest();
