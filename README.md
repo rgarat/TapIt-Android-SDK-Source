@@ -48,7 +48,6 @@ A sample project is included in this repo.  See https://github.com/tapit/TapIt-A
 
 AdPrompt Usage
 --------------
-![Export TapItAdView.jar](https://raw.github.com/tapit/TapIt-Android-SDK-Source/master/doc/assets/adprompt.png)
 AdPrompts are a simple ad unit designed to have a native feel. The user is given the option to download an app, and if they accept, they are taken to the app within the app marketplace.
 
 ````java
