@@ -1,7 +1,7 @@
 TapIt Android SDK
 =================
 
-Version 1.7.3
+Version 1.7.4
 
 This is the Android SDK for the TapIt! mobile ad network. Go to http://tapit.com/ for more details and to sign up.
 
@@ -51,14 +51,11 @@ AdPrompt Usage
 AdPrompts are a simple ad unit designed to have a native feel. The user is given the option to download an app, and if they accept, they are taken to the app within the app marketplace.
 
 ````java
-AlertAd alertAd = new AlertAd(this, "YOUR_ZONE_ID");
-Hashtable<String, String> params = new Hashtable<String, String>();
-params.put("mode", "test"); // Alert ads only in test mode during beta phase
-alertAd.setCustomParameters(params);
-alertAd.showAlertAd();
+AdPrompt adPrompt = new AdPrompt(this, "YOUR_ZONE_ID");
+adPrompt.showAdPrompt();
 ````
 
-Sample implementation can be found here: https://github.com/tapit/TapIt-Android-SDK-Source/blob/master/src/example/src/com/yourcompany/TapItTestActivity.java#L204
+Sample implementation can be found here: https://github.com/tapit/TapIt-Android-SDK-Source/blob/master/src/example/src/com/yourcompany/TapItTestActivity.java#L178
 
 
 Banner Usage
@@ -119,7 +116,7 @@ bannerAd.setOnAdDownload(new OnAdDownload() {
 });
 ````
 
-Sample implementation can be found here: https://github.com/tapit/TapIt-Android-SDK-Source/blob/master/src/example/src/com/yourcompany/TapItTestActivity.java#L57
+Sample implementation can be found here: https://github.com/tapit/TapIt-Android-SDK-Source/blob/master/src/example/src/com/yourcompany/TapItTestActivity.java#L59
 
 
 Interstitial Usage
@@ -195,4 +192,4 @@ interstitialAd.setOnInterstitialAdDownload(new OnInterstitialAdDownload() {
 interstitialAd.load(); // request an ad from the server, to be displayed later...
 ````
 
-Sample implementation can be found here: https://github.com/tapit/TapIt-Android-SDK-Source/blob/master/src/example/src/com/yourcompany/TapItTestActivity.java#L231
+Sample implementation can be found here: https://github.com/tapit/TapIt-Android-SDK-Source/blob/master/src/example/src/com/yourcompany/TapItTestActivity.java#L191

@@ -25,12 +25,12 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
         <Button
-            android:id="@+id/loadAlertAdButton"
+            android:id="@+id/loadAdPromptButton"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="Load Alert Ad" />
         <Button
-            android:id="@+id/showAlertAdButton"
+            android:id="@+id/showAdPromptButton"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="Show Alert Ad" />

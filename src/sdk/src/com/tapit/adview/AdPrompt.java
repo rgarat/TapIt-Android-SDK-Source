@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
 
-import android.webkit.WebView;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -22,16 +21,16 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class AlertAd {
+public class AdPrompt {
     private static final String AD_TYPE_DIALOG = "10";
 
     protected Context context;
     protected AdRequest adRequest;
 
-    private AlertAdCallbackListener listener;
+    private AdPromptCallbackListener listener;
     private LoadContentTask contentTask;
 
-    private boolean showAfterLoad; // set by .showDialog() when called on a dialog that hasn't been loaded
+    private boolean showAfterLoad; // set by .showAdPrompt() when called on an AdPrompt that hasn't been loaded
     private boolean loaded;
     private String title;
     private String html;
@@ -40,7 +39,7 @@ public class AlertAd {
     private String clickUrl;
 
 
-    public AlertAd(Context context, String zone) {
+    public AdPrompt(Context context, String zone) {
         this.context = context;
         adRequest = new AdRequest(zone);
         adRequest.setAdtype(AD_TYPE_DIALOG);
@@ -90,11 +89,11 @@ public class AlertAd {
     }
 
     /**
-     * Set listener for alert ad callbacks
+     * Set listener for AdPrompt callbacks
      *
      * @param listener
      */
-    public void setListener(AlertAdCallbackListener listener) {
+    public void setListener(AdPromptCallbackListener listener) {
         this.listener = listener;
     }
 
@@ -107,20 +106,20 @@ public class AlertAd {
         return loaded;
     }
 
-    public void showAlertAd() {
+    public void showAdPrompt() {
         if(!loaded) {
             showAfterLoad = true; // show immediately after loading...
             load();
         }
         else {
-            displayAlertAd(title, html, callToAction, declineStr, clickUrl);
+            displayAdPrompt(title, html, callToAction, declineStr, clickUrl);
         }
     }
 
-    private void displayAlertAd(String title, String html, String callToAction, String declineStr, final String clickUrl) {
+    private void displayAdPrompt(String title, String html, String callToAction, String declineStr, final String clickUrl) {
         final Activity theActivity = (Activity)context;
-        final AlertAdCallbackListener theListener = listener;
-        final AlertAd theAlertAd = this;
+        final AdPromptCallbackListener theListener = listener;
+        final AdPrompt theAdPrompt = this;
 
         try {
             AlertDialog alertDialog = new AlertDialog.Builder(context)
@@ -133,7 +132,7 @@ public class AlertAd {
                                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(clickUrl));
                                 theActivity.startActivityForResult(intent, 2);
                                 if (theListener != null){
-                                    theListener.alertAdClosed(theAlertAd, true);
+                                    theListener.adPromptClosed(theAdPrompt, true);
                                 }
                             }
                         };
@@ -144,7 +143,7 @@ public class AlertAd {
                     public void onClick(DialogInterface dialog, int which){
                         // cancel out...
                         if (theListener != null){
-                            theListener.alertAdClosed(theAlertAd, false);
+                            theListener.adPromptClosed(theAdPrompt, false);
                         }
                     }
                 }).create();
@@ -152,11 +151,11 @@ public class AlertAd {
 
             alertDialog.show();
             if(listener != null) {
-                listener.alertAdDisplayed(this);
+                listener.adPromptDisplayed(this);
             }
         } catch(Exception e) {
             if(listener != null) {
-                listener.alertAdError(this, e.getMessage());
+                listener.adPromptError(this, e.getMessage());
             }
             Log.e("TapIt", "An error occured while attempting to display AdPrompt", e);
         }
@@ -188,10 +187,10 @@ public class AlertAd {
 
     private class LoadContentTask extends AsyncTask<Integer, Integer, String>{
 
-        private AlertAd theAd;
+        private AdPrompt theAdPrompt;
 
-        public LoadContentTask(AlertAd alertAd) {
-            theAd = alertAd;
+        public LoadContentTask(AdPrompt adPrompt) {
+            theAdPrompt = adPrompt;
         }
 
         @Override
@@ -215,7 +214,7 @@ public class AlertAd {
                 if(jsonObject.has("error")) {
                     // failed to retrieve an ad, abort and call the error callback
                     if(listener != null) {
-                        listener.alertAdError(theAd, jsonObject.getString("error"));
+                        listener.adPromptError(theAdPrompt, jsonObject.getString("error"));
                     }
                 }
                 else if (jsonObject.has("type") && "alert".equals(jsonObject.getString("type"))) {
@@ -228,16 +227,16 @@ public class AlertAd {
                     clickUrl = jsonObject.getString("clickurl");
                     loaded = true;
                     if(listener != null) {
-                        listener.alertAdLoaded(theAd);
+                        listener.adPromptLoaded(theAdPrompt);
                     }
 
                     if(showAfterLoad) {
-                        showAlertAd();
+                        showAdPrompt();
                     }
                 }
                 else {
                     if(listener != null) {
-                        listener.alertAdError(theAd, "Server returned an incompatible ad");
+                        listener.adPromptError(theAdPrompt, "Server returned an incompatible ad");
                     }
                 }
 
@@ -249,35 +248,35 @@ public class AlertAd {
                     error = e.getMessage();
                 }
                 if(listener != null) {
-                    listener.alertAdError(theAd, error);
+                    listener.adPromptError(theAdPrompt, error);
                 }
             }
         }
     }
 
     /**
-     * Callbacks for alert ads.
+     * Callbacks for AdPrompts.
      */
-    public interface AlertAdCallbackListener {
+    public interface AdPromptCallbackListener {
         /**
-         * This event is fired after alert is loaded and ready to be displayed.
+         * This event is fired after the AdPrompt is loaded and ready to be displayed.
          */
-        public void alertAdLoaded(AlertAd ad);
+        public void adPromptLoaded(AdPrompt adPrompt);
 
         /**
-         * This event is fired after alert is displayed.
+         * This event is fired after the AdPrompt is displayed.
          */
-        public void alertAdDisplayed(AlertAd ad);
+        public void adPromptDisplayed(AdPrompt adPrompt);
 
         /**
-         * This event is fired if alert failed to load.
+         * This event is fired if the AdPrompt failed to load.
          */
-        public void alertAdError(AlertAd ad, String error);
+        public void adPromptError(AdPrompt adPrompt, String error);
 
         /**
-         * This event is fired if the alert was closed.
+         * This event is fired if the AdPrompt was closed.
          * @param didAccept true if user pressed the call to action button, false otherwise
          */
-        public void alertAdClosed(AlertAd ad, boolean didAccept);
+        public void adPromptClosed(AdPrompt adPrompt, boolean didAccept);
     }
 }
