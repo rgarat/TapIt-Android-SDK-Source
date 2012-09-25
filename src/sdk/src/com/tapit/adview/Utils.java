@@ -101,7 +101,7 @@ public class Utils {
 		out.close();
 	}
 	
-	public static String getDeviceIdMD5(Context context){
+	public static String getDeviceId(Context context){
 		// Interesting discussion about getting a DeviceId
 		// http://stackoverflow.com/questions/2785485/is-there-a-unique-android-device-id
 		try {
@@ -110,7 +110,8 @@ public class Utils {
 			if (deviceId == null) {
 				deviceId = Utils.id(context);
 			}
-			return Utils.md5(deviceId);
+//			return Utils.md5(deviceId);
+			return deviceId;
 		}
 		catch(SecurityException e) {
 			return "unknown";
@@ -122,6 +123,14 @@ public class Utils {
 //        }
 //		
 //        return deviceId;
+	}
+	
+	public static String getDeviceIdMD5(Context context){
+	    String udid = getDeviceId(context);
+	    if(udid != "unknown") {
+	        udid = Utils.md5(udid);
+	    }
+	    return udid;
 	}
 	
 	public static String getCarrier(Context context) {
