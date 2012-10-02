@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -16,6 +17,9 @@ import com.tapit.adview.*;
 import com.tapit.adview.AdViewCore.OnAdDownload;
 import com.tapit.adview.AdViewCore.OnInterstitialAdDownload;
 import com.tapit.adview.track.InstallTracker;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class TapItTestActivity extends Activity {
 
@@ -58,10 +62,11 @@ public class TapItTestActivity extends Activity {
 
     private void setupBannerAd(){
         bannerAd = (AdView)findViewById(R.id.bannerAd);
+        bannerAd.setBackgroundColor(0);
 
         // the remainder of this method is optional...
 
-//        Hashtable<String, String> params = new Hashtable<String, String>();
+//        Map<String, String> params = new HashMap<String, String>();
 //        params.put("mode", "test");
 //        bannerAd.setCustomParameters(params);
 
@@ -72,6 +77,7 @@ public class TapItTestActivity extends Activity {
                 // Called just before an ad request is made
                 Log.d("TapItTest", "Requesting banner ad");
                 Toast.makeText(getApplicationContext(), "Requesting banner ad", Toast.LENGTH_SHORT).show();
+                bannerAd.setBackgroundColor(0);
             }
 
             @Override
@@ -83,8 +89,8 @@ public class TapItTestActivity extends Activity {
 
             @Override
             public void error(AdViewCore adView, String error){
-                Toast.makeText(getApplicationContext(), "Failed to load banner: " + error, Toast.LENGTH_LONG).show();
                 // Called when bannerAd fails to load an ad... hide ad
+                Toast.makeText(getApplicationContext(), "Failed to load banner: " + error, Toast.LENGTH_LONG).show();
                 Log.d("TapItTest", "Banner ad failed to load: " + error);
             }
 
@@ -130,7 +136,7 @@ public class TapItTestActivity extends Activity {
         // the remainder of this method is optional...
 
         // send optional params to the AdPrompt
-//        Hashtable<String, String> params = new Hashtable<String, String>();
+//        Map<String, String> params = new HashMap<String, String>();
 //        params.put("mode", "test");
 //        adPrompt.setCustomParameters(params);
 
@@ -193,7 +199,7 @@ public class TapItTestActivity extends Activity {
 
         // Optionally specify custom params
         // un-comment to enable test mode
-//        Hashtable<String, String> params = new Hashtable<String, String>();
+//        Map<String, String> params = new HashMap<String, String>();
 //        params.put("mode", "test");
 //        interstitialAd.setCustomParameters(params);
 
@@ -416,7 +422,6 @@ public class TapItTestActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        AdView bannerAd = (AdView)findViewById(R.id.bannerAd);
         if(bannerAd != null) {
             // Shutdown ad internals
             bannerAd.destroy();

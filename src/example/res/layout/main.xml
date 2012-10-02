@@ -64,6 +64,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         zone="7979" />
-
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/bannerContainer"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true" />-->
 
 </RelativeLayout>

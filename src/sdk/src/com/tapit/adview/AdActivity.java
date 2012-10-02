@@ -1,5 +1,6 @@
 package com.tapit.adview;
 
+import android.util.Log;
 import com.tapit.adview.AdViewCore.OnInterstitialAdDownload;
 
 import android.app.Activity;
@@ -17,10 +18,10 @@ import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 
 public class AdActivity extends Activity {
-	public static AdInterstitialBaseView adView; // this will only be set for interstitials
-	public static AdViewCore callingAdView; // this will only be set for banner ads
+    public static AdInterstitialBaseView adView; // this will only be set for interstitials
+    public static AdViewCore callingAdView; // this will only be set for banner ads
 
-	protected WebView webView;
+    protected WebView webView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -28,94 +29,94 @@ public class AdActivity extends Activity {
 
         String clickURL = getIntent().getStringExtra("com.tapit.adview.ClickURL");
         if(clickURL != null) {
-        	setupWebView(savedInstanceState);
+            setupWebView(savedInstanceState);
         }
         else {
-	        if(adView != null) {
-		        setContentView(adView.getInterstitialView(this));
-		        adView.interstitialShowing();
-	        }
-	        else {
-	        	finish();
+            if(adView != null) {
+                setContentView(adView.getInterstitialView(this));
+                adView.interstitialShowing();
+            }
+            else {
+                finish();
 
-	        }
+            }
         }
     }
 
     private void setupWebView(Bundle savedInstanceState) {
-		getWindow().requestFeature(Window.FEATURE_PROGRESS);
+        getWindow().requestFeature(Window.FEATURE_PROGRESS);
 
-		// Makes Progress bar Visible
-		getWindow().setFeatureInt(Window.FEATURE_PROGRESS, Window.PROGRESS_VISIBILITY_ON);
+        // Makes Progress bar Visible
+        getWindow().setFeatureInt(Window.FEATURE_PROGRESS, Window.PROGRESS_VISIBILITY_ON);
 
-		WebView webView = new WebView(this);
-		webView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT,
-				LayoutParams.FILL_PARENT, 1f));
-		webView.loadUrl(getIntent().getDataString());
-		webView.getSettings().setJavaScriptEnabled(true);
-		webView.getSettings().setSupportZoom(true);
-		webView.getSettings().setBuiltInZoomControls(true);
-//		webView.getSettings().setLoadWithOverviewMode(true); // not supported by older versions of Android
-		webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-		webView.getSettings().setUseWideViewPort(true);
+        WebView webView = new WebView(this);
+        webView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT,
+                LayoutParams.FILL_PARENT, 1f));
+        webView.loadUrl(getIntent().getDataString());
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setSupportZoom(true);
+        webView.getSettings().setBuiltInZoomControls(true);
+//        webView.getSettings().setLoadWithOverviewMode(true); // not supported by older versions of Android
+        webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+        webView.getSettings().setUseWideViewPort(true);
 
-		setContentView(webView);
+        setContentView(webView);
 
-		webView.setWebViewClient(new WebViewClient() {
-			@Override
-			public boolean shouldOverrideUrlLoading(WebView view, String url) {
-				if (!url.toLowerCase().startsWith("http://") && !url.toLowerCase().startsWith("https://")){
-					try {
-					    if(adView != null) {
-					        OnInterstitialAdDownload listener = adView.getOnInterstitialAdDownload();
-					        if(listener != null) {
-					            listener.willLeaveApplication(adView);
-					        }
-					    }
-						else if(callingAdView != null) {
-						    AdViewCore.OnAdDownload listener = callingAdView.getOnAdDownload();
-						    if(listener != null) {
-							    listener.willLeaveApplication(callingAdView);
-						    }
-					    }
-						Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						startActivityForResult(intent,3);
-					}
-					catch(Exception e) {
-						e.printStackTrace();
-					}
-					return true;
-				}
-				view.loadUrl(url);
-				setTitle(url);
-				return false;
-			}
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                if (!url.toLowerCase().startsWith("http://") && !url.toLowerCase().startsWith("https://")){
+                    try {
+                        if(adView != null) {
+                            OnInterstitialAdDownload listener = adView.getOnInterstitialAdDownload();
+                            if(listener != null) {
+                                listener.willLeaveApplication(adView);
+                            }
+                        }
+                        else if(callingAdView != null) {
+                            AdViewCore.OnAdDownload listener = callingAdView.getOnAdDownload();
+                            if(listener != null) {
+                                listener.willLeaveApplication(callingAdView);
+                            }
+                        }
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivityForResult(intent,3);
+                    }
+                    catch(Exception e) {
+                        Log.e("TapIt", "An error occured", e);
+                    }
+                    return true;
+                }
+                view.loadUrl(url);
+                setTitle(url);
+                return false;
+            }
 
-			@Override
-			public void onPageFinished(WebView view, String url) {
-				super.onPageFinished(view, url);
-			}
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+            }
 
-			@Override
-			public void onPageStarted(WebView view, String url, Bitmap favicon) {
-				super.onPageStarted(view, url, favicon);
-			}
-		});
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+            }
+        });
 
-		webView.setWebChromeClient(new WebChromeClient() {
-			@Override
-			public void onProgressChanged(WebView view, int newProgress) {
-				setProgress(newProgress * 100); // Make the bar disappear after
-												// URL is loaded
-			}
-		});
-	}
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                setProgress(newProgress * 100); // Make the bar disappear after
+                                                // URL is loaded
+            }
+        });
+    }
 
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-		        finish();
+                finish();
             return true;
         }
         return false;
@@ -124,36 +125,36 @@ public class AdActivity extends Activity {
 
     @Override
     public void finish() {
-    	if(adView != null) {
-    		adView.interstitialClosing();
-	    	adView.removeViews();
-	    	adView = null;
-    	}
-    	if(callingAdView != null) {
-    	    callingAdView.willDismissFullScreen();
-    	    callingAdView = null;
-    	}
-    	super.finish();
+        if(adView != null) {
+            adView.interstitialClosing();
+            adView.removeViews();
+            adView = null;
+        }
+        if(callingAdView != null) {
+            callingAdView.willDismissFullScreen();
+            callingAdView = null;
+        }
+        super.finish();
     }
 
-	@Override
-	protected void onRestart(){
-		super.onRestart();
-		// close activity when app returns to foreground
-		finish();
-	}
+    @Override
+    protected void onRestart(){
+        super.onRestart();
+        // close activity when app returns to foreground
+        finish();
+    }
 
-	@Override
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(adView != null) {
-        	adView.closeInterstitial();
+            adView.closeInterstitial();
         }
     }
 
-	@Override
-	protected void onDestroy() {
-//	    mLayout.removeAllViews();
-	    super.onDestroy();
-	}
+    @Override
+    protected void onDestroy() {
+//        mLayout.removeAllViews();
+        super.onDestroy();
+    }
 }

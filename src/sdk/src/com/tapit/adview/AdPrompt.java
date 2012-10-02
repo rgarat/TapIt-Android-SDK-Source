@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
+import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -78,11 +79,23 @@ public class AdPrompt {
     }
 
     /**
+     * @deprecated Use setCustomParameters(Map<String, String> customParameters) instead
      * Optional. Set Custom Parameters.
      *
      * @param customParameters
      */
     public void setCustomParameters(Hashtable<String, String> customParameters) {
+        if (adRequest != null) {
+            adRequest.setCustomParameters(customParameters);
+        }
+    }
+
+    /**
+     * Optional. Set Custom Parameters.
+     *
+     * @param customParameters a map containing parameters to add
+     */
+    public void setCustomParameters(Map<String, String> customParameters) {
         if (adRequest != null) {
             adRequest.setCustomParameters(customParameters);
         }

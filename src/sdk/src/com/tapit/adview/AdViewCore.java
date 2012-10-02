@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -54,7 +55,7 @@ import com.tapit.adview.AdLog;
  * Viewer of advertising.
  */
 public abstract class AdViewCore extends WebView {
-    public static final String VERSION = "1.7.4";
+    public static final String VERSION = "1.7.5";
     public static final String TAG = "AdViewCore";
 
     private static final long AD_DEFAULT_RELOAD_PERIOD = 120000; // milliseconds
@@ -334,7 +335,7 @@ public abstract class AdViewCore extends WebView {
     /**
      * Optional. Get Custom Parameters.
      */
-    public Hashtable<String, String> getCustomParameters() {
+    public Map<String, String> getCustomParameters() {
         if (adRequest != null) {
             return adRequest.getCustomParameters();
         } else {
@@ -343,11 +344,23 @@ public abstract class AdViewCore extends WebView {
     }
 
     /**
+     * @deprecated Use setCustomParameters(Map<String, String> customParameters) instead
      * Optional. Set Custom Parameters.
      * 
      * @param customParameters
      */
     public void setCustomParameters(Hashtable<String, String> customParameters) {
+        if (adRequest != null) {
+            adRequest.setCustomParameters(customParameters);
+        }
+    }
+
+    /**
+     * Optional. Set Custom Parameters.
+     *
+     * @param customParameters
+     */
+    public void setCustomParameters(Map<String, String> customParameters) {
         if (adRequest != null) {
             adRequest.setCustomParameters(customParameters);
         }
@@ -422,7 +435,7 @@ public abstract class AdViewCore extends WebView {
             String keywords, String latitude,
             String longitude, String ua,
             String paramBG, String paramLINK,
-            Hashtable<String, String> customParameters) {
+            Map<String, String> customParameters) {
         this.context = context;
         adRequest = new AdRequest(adLog);
         adRequest.initDefaultParameters(context);
@@ -750,7 +763,7 @@ public abstract class AdViewCore extends WebView {
                 } catch (Exception e) {
                     adLog.log(AdLog.LOG_LEVEL_1, AdLog.LOG_TYPE_ERROR, "LoadContentTask",
                         e.getMessage());
-                    e.printStackTrace();
+                    Log.e("TapIt", "An error occured", e);
                 }
                 scheduleUpdate();
                                 
@@ -937,7 +950,7 @@ public abstract class AdViewCore extends WebView {
                     adDownload.error((AdViewCore)view, description);
                 }
             } catch (Exception e){
-                e.printStackTrace();
+                Log.e("TapIt", "An error occured", e);
             }
         }
     }
@@ -1199,7 +1212,7 @@ public abstract class AdViewCore extends WebView {
 //                getContext().startActivity(intent);
 //            }
 //            catch(ActivityNotFoundException e){
-//                e.printStackTrace();
+//                Log.e("TapIt", "An error occured", e);
 //            }
 //        } else if(d != null){
 //            msg.setData(data);
@@ -1222,7 +1235,7 @@ public abstract class AdViewCore extends WebView {
                 }
                 return;
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e("TapIt", "An error occured", e);
                 adLog.log(AdLog.LOG_LEVEL_1, AdLog.LOG_TYPE_ERROR, "loadUrl", e.getMessage());
                 return;
             }
@@ -1644,7 +1657,7 @@ public abstract class AdViewCore extends WebView {
      * @param data the string to be loaded as html
      */
     protected void loadDataWithBaseURL(String data) {
-        super.loadDataWithBaseURL(null, data, "text/html", "UTF-8", null);
+        super.loadDataWithBaseURL("about:blank", data, "text/html", "UTF-8", "about:blank");
         // reset background
         if(backgroundColor != null) {
             setBackgroundColor(backgroundColor);

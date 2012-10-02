@@ -8,6 +8,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -142,7 +143,7 @@ public class AdVideoUnitView extends AdInterstitialBaseView {
 					}
 				}
 			} catch (Exception e){
-				e.printStackTrace();
+                Log.e("TapIt", "An error occured", e);
 			}
 		}
 	};
@@ -188,13 +189,13 @@ public class AdVideoUnitView extends AdInterstitialBaseView {
 			player.setDataSource(url);
 			player.prepareAsync();
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+            Log.e("TapIt", "An error occured", e);
 		} catch (IllegalStateException e) {
-			e.printStackTrace();
+            Log.e("TapIt", "An error occured", e);
 		} catch (IOException e) {
-			e.printStackTrace();
+            Log.e("TapIt", "An error occured", e);
 		} catch (Exception e) {
-			e.printStackTrace();
+            Log.e("TapIt", "An error occured", e);
 		}
 
 //		Log.d("Nick", "vid playing!");
@@ -230,11 +231,9 @@ public class AdVideoUnitView extends AdInterstitialBaseView {
 		    player.start();
 		    handler.post(progressRunnable);
 //		} catch (IllegalStateException e) {
-//			e.printStackTrace();
-//			Log.d("Nick","ise");
+//			Log.e("TapIt", "An error occured", e);
 //		} catch (IOException e) {
-//			e.printStackTrace();
-//			Log.d("Nick","ioe");
+//			Log.e("TapIt", "An error occured", e);
 //		}
 	}
 	
