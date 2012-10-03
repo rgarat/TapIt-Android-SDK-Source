@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" title="TapIt AIR" creationComplete="createUI(event)">
+	<fx:Script>
+		<![CDATA[
+			import com.tapit.air.BannerSizes;
+			import com.tapit.air.TapItAir;
+			
+			import flash.events.MouseEvent;
+			import flash.events.StatusEvent;
+			
+			import mx.events.FlexEvent;
+			private var _currentSize:String;
+			private var _isBannerLoadedFromButton:Boolean;
+			
+			protected function createUI(event:FlexEvent):void
+			{
+				TapItAir.addBanner();
+			}
+						
+			protected function adAlertBtn_clickHandler(event:MouseEvent):void
+			{
+				TapItAir.addAlert();
+			}
+			
+			protected function fullScreenBtn_clickHandler(event:MouseEvent):void
+			{
+				TapItAir.addFullScreen();
+			}
+			
+			protected function banner320Btn_clickHandler(event:MouseEvent):void
+			{
+				TapItAir.removeBanner();
+				TapItAir.addBanner(BannerSizes.IPHONE_BANNER);
+			}
+			
+			protected function bannerSmallBtn_clickHandler(event:MouseEvent):void
+			{
+				TapItAir.removeBanner();
+				TapItAir.addBanner(BannerSizes.SMALL_BANNER);
+			}			
+		]]>
+	</fx:Script>
+	
+	<s:Group id="btnContainer" width="100%" top="0" bottom="50">
+		<s:Rect width="100%" height="100%">
+			<s:fill>
+				<s:SolidColor id="backgroundColor" color="0xFFFFFF" />
+			</s:fill>
+		</s:Rect>
+		
+		<s:Button id="adAlertBtn" width="80%" horizontalCenter="0" label="Show Ad Alert" top="30" click="adAlertBtn_clickHandler(event)"/>
+		
+		<s:Button id="fullScreenBtn" width="80%" horizontalCenter="0" label="Show Full Screen" verticalCenter="0" click="fullScreenBtn_clickHandler(event)"/>
+		
+		<s:Button id="banner320Btn" left="{fullScreenBtn.x}" width="40%" label="320 x 50" bottom="30" click="banner320Btn_clickHandler(event)"/>
+		
+		<s:Button id="bannerSmallBtn" right="{fullScreenBtn.x}" width="40%" label="120 x 20" bottom="30" click="bannerSmallBtn_clickHandler(event)"/>
+		
+	</s:Group>
+		
+	<s:Group width="100%" height="50" bottom="0">
+		<s:Rect width="100%" height="100%">
+			<s:fill>
+				<s:SolidColor id="adBackground" color="0xCCCCCC" />
+			</s:fill>
+		</s:Rect>
+	</s:Group>
+</s:View>

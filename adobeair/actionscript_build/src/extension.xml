@@ -1,0 +1,15 @@
+<extension xmlns="http://ns.adobe.com/air/extension/3.1">
+	<id>com.tapit.air</id>
+	<versionNumber>1</versionNumber>
+	<platforms>
+		<platform name="Android-ARM">
+			<applicationDeployment>			
+				<nativeLibrary>TapItAir.jar</nativeLibrary>
+				<initializer>com.tapit.air.extensions.TapItAirExtension</initializer>
+			</applicationDeployment>
+		</platform>
+		<platform name="default">
+			<applicationDeployment/>
+		</platform>
+	</platforms>
+</extension>
