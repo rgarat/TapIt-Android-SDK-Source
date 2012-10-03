@@ -1,0 +1,22 @@
+%define lookup-function-name lookupGeneratedInit
+%define class-name TapitandroidBindings
+%{
+
+#include <string.h>
+#include <v8.h>
+#include <KrollBindings.h>
+
+#include "com.tapit.AlertAdProxy.h"
+#include "com.tapit.TapitandroidModule.h"
+#include "com.tapit.BannerViewProxy.h"
+#include "com.tapit.InterstitialAdProxy.h"
+
+
+%}
+struct titanium::bindings::BindEntry;
+%%
+com.tapit.AlertAdProxy, ::com::tapit::tapitandroid::AlertAdProxy::bindProxy, ::com::tapit::tapitandroid::AlertAdProxy::dispose
+com.tapit.TapitandroidModule, ::com::tapit::TapitandroidModule::bindProxy, ::com::tapit::TapitandroidModule::dispose
+com.tapit.BannerViewProxy, ::com::tapit::tapitandroid::BannerViewProxy::bindProxy, ::com::tapit::tapitandroid::BannerViewProxy::dispose
+com.tapit.InterstitialAdProxy, ::com::tapit::tapitandroid::InterstitialAdProxy::bindProxy, ::com::tapit::tapitandroid::InterstitialAdProxy::dispose
+%%

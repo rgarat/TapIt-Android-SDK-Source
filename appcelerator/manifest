@@ -1,0 +1,18 @@
+#
+# this is your module manifest and used by Titanium
+# during compilation, packaging, distribution, etc.
+#
+version: 1.0
+apiversion: 2
+description: My module
+author: Nam Hoang
+license: Specify your license
+copyright: 2012 by Nam Hoang
+
+
+# these should not be edited
+name: tapitandroid
+moduleid: com.tapit
+guid: 9c088234-8b75-48fd-860d-6886ca966c1e
+platform: android
+minsdk: 2.1.1.GA
