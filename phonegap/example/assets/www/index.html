@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta name="viewport" content="width=320; user-scalable=no" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>Demo tapit plugin</title>
+	  <script type="text/javascript" charset="utf-8" src="cordova-2.0.0.js"></script>
+	  <script type="text/javascript" charset="utf-8" src="Tapit/tapit.js"></script>
+	  <script type="text/javascript" charset="utf-8">
+       	function showAd(param){
+			switch(param){
+				case 'Video':window.plugins.TapItAndroid.AdVideo(function(r){console.log('success video ad');},function(e){console.log('error video ad');},"7216");
+							 break;
+				case 'Full' :window.plugins.TapItAndroid.Adfullscreen(function(r){console.log('success full screen ad');},function(e){console.log('error full screenad');},"7216");
+							 break;
+				case 'Inter':window.plugins.TapItAndroid.AdInterstitial(function(r){console.log('success inter ad');},function(e){console.log('error inter ad');},"7216");
+							 break;
+				case 'Wall' :window.plugins.TapItAndroid.AdOfferWall(function(r){console.log('success wall ad');},function(e){console.log('error wall ad');},"7216");
+							 break;
+				case 'Alert' :window.plugins.TapItAndroid.AlertAd(function(r){console.log('success Alert ad');},function(e){console.log('error Alert ad');},"7216");
+							 break;
+				default:;			 
+			}
+		}
+           
+</script>  
+
+  </head>
+  <body>
+    <div>
+    	Tap it Android Plugin
+    </div>
+    <button onclick="showAd('Video');">Video</button>
+	<button onclick="showAd('Full');">Full</button>
+	<button onclick="showAd('Inter');">Inter</button>
+	<button onclick="showAd('Wall');">Wall</button>
+	<button onclick="showAd('Alert');">Alert</button>
+  </body>
+</html>
