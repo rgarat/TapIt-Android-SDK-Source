@@ -101,6 +101,8 @@ public final class AdMobAdapter
         params.put( "client", CLIENT_STRING );
         params.put( "h", Integer.toString(bestSize.getHeight()) );
         params.put( "w", Integer.toString(bestSize.getWidth()) );
+        if(mediationAdRequest.isTesting())
+        	params.put("mode", "test");
                 
         bannerAd.setCustomParameters(params);
         bannerAd.setOnAdDownload(this);
@@ -119,6 +121,8 @@ public final class AdMobAdapter
         interstitialAd = new AdInterstitialView(activity, zoneId);
         Map<String, String> params = new HashMap<String, String>();
         params.put( "client", CLIENT_STRING );
+        if(mediationAdRequest.isTesting())
+        	params.put("mode", "test");
         interstitialAd.setCustomParameters(params);
         interstitialAd.setOnInterstitialAdDownload(this);
         interstitialAd.load();
